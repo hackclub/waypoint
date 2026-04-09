@@ -1,0 +1,106 @@
+---
+const WIDTH = 1680;
+const HEIGHT = 1200;
+const STAR_SEED = 731942;
+
+function fourPointStarPath(x: number, y: number, s: number): string {
+  return `M ${x} ${y - s}
+    L ${x + s * 0.28} ${y - s * 0.28}
+    L ${x + s} ${y}
+    L ${x + s * 0.28} ${y + s * 0.28}
+    L ${x} ${y + s}
+    L ${x - s * 0.28} ${y + s * 0.28}
+    L ${x - s} ${y}
+    L ${x - s * 0.28} ${y - s * 0.28}
+    Z`;
+}
+
+function wavePath(width: number, baseY: number, amplitude: number, frequency: number, phase: number): string {
+  let d = `M 0 ${baseY}`;
+  for (let x = 0; x <= width; x += 14) {
+    const t = x / width;
+    const y =
+      baseY +
+      Math.sin(t * Math.PI * frequency + phase) * amplitude +
+      Math.cos(t * Math.PI * frequency * 0.45 + phase * 1.1) * amplitude * 0.32;
+    d += ` L ${x.toFixed(2)} ${y.toFixed(2)}`;
+  }
+  return d;
+}
+
+const gridX = Array.from({ length: 21 }, (_, i) => i * 84);
+const gridY = Array.from({ length: 16 }, (_, i) => i * 80);
+
+function createRandom(seed: number) {
+  let state = seed >>> 0;
+  return () => {
+    state += 0x6D2B79F5;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const random = createRandom(STAR_SEED);
+const stars = [];
+
+for (let attempt = 0; attempt < 420 && stars.length < 58; attempt += 1) {
+  const size = 3.5 + random() * 7.5;
+  const candidate = {
+    x: 48 + random() * (WIDTH - 96),
+    y: 30 + random() * 500,
+    size,
+    tone: random() < 0.26 ? 'gold' : 'ink',
+    opacity: 0.24 + random() * 0.48,
+  };
+
+  const hasNearbyStar = stars.some((star) => {
+    const dx = star.x - candidate.x;
+    const dy = star.y - candidate.y;
+    const minDistance = 26 + star.size + candidate.size;
+    return dx * dx + dy * dy < minDistance * minDistance;
+  });
+
+  if (!hasNearbyStar) stars.push(candidate);
+}
+---
+
+<div class="blueprint-bg" aria-hidden="true">
+  <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} preserveAspectRatio="xMidYMid slice">
+    <rect width={WIDTH} height={HEIGHT} fill="var(--bg)" />
+
+    {gridX.map((x) => <line x1={x} y1="0" x2={x} y2={HEIGHT} stroke="var(--ink)" stroke-width="1" opacity="0.13" />)}
+    {gridY.map((y) => <line x1="0" y1={y} x2={WIDTH} y2={y} stroke="var(--ink)" stroke-width="1" opacity="0.13" />)}
+
+    <path d={wavePath(WIDTH, 126, 8, 8.2, 0.4)} fill="none" stroke="var(--gold)" stroke-width="1.5" opacity="0.35" />
+    <path d={wavePath(WIDTH, 188, 10, 6.3, 1.5)} fill="none" stroke="var(--red)" stroke-width="1.5" opacity="0.24" />
+
+    {stars.map((star) => (
+      <path
+        d={fourPointStarPath(star.x, star.y, star.size)}
+        fill={star.tone === "gold" ? "var(--gold)" : "var(--ink)"}
+        opacity={star.opacity}
+      />
+    ))}
+  </svg>
+</div>
+
+<style>
+  .blueprint-bg {
+    position: fixed;
+    inset: -4vw;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.72;
+    overflow: hidden;
+  }
+
+  .blueprint-bg svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-width: 100%;
+    min-height: 100%;
+  }
+</style>

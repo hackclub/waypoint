@@ -1,0 +1,55 @@
+---
+export type Variant = "primary" | "secondary";
+
+export interface Props {
+  href: string;
+  variant?: Variant;
+  class?: string;
+}
+
+const {
+  href,
+  variant = "primary",
+  class: className = ""
+} = Astro.props;
+---
+
+<a href={href} class={`waypoint-button ${variant} ${className}`}>
+  <slot />
+</a>
+
+<style>
+  .waypoint-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 1rem 1.25rem;
+    border: 2px solid var(--ink);
+    background: var(--gold);
+    color: var(--bg);
+    box-shadow: 6px 6px 0 var(--red);
+    transition: transform 120ms ease, box-shadow 120ms ease;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .waypoint-button:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 var(--red);
+  }
+
+  .waypoint-button.secondary {
+    background: var(--bg);
+    color: var(--ink);
+    box-shadow: 6px 6px 0 var(--gold);
+  }
+
+  .waypoint-button.secondary:hover {
+    box-shadow: 8px 8px 0 var(--gold);
+  }
+</style>

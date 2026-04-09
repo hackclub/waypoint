@@ -1,0 +1,26 @@
+<svg viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg">
+  <text
+    x="720"
+    y="430"
+    font-size="54"
+    font-family="'IBM Plex Mono', ui-monospace, monospace"
+    fill="#f2e5b7"
+    fill-opacity="0.72"
+    text-anchor="middle"
+    dominant-baseline="middle"
+  >
+    WAYPOINT HERO
+  </text>
+  <text
+    x="720"
+    y="500"
+    font-size="24"
+    font-family="'IBM Plex Mono', ui-monospace, monospace"
+    fill="#f0b323"
+    fill-opacity="0.75"
+    text-anchor="middle"
+    dominant-baseline="middle"
+  >
+    Replace with final art
+  </text>
+</svg>

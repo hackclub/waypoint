@@ -1,5 +1,5 @@
 ---
-title: Example Reference
+title: ANOTHA Reference
 description: A reference page in my new Starlight guides site.
 ---
 

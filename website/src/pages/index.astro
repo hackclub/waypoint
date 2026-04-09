@@ -1,0 +1,476 @@
+---
+import Navigation from '../components/Navigation.astro';
+import Button from '../components/Button.astro';
+import BlueprintBackground from '../components/BlueprintBackground.astro';
+import { IMAGES, LINKS } from '../config';
+
+const GUIDES_URL = LINKS.guides;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Waypoint!</title>
+    <meta
+      name="description"
+      content="Waypoint is a ROS2 Robotics YSWS where you design your own control PCB and robot chassis, then ship your design for the real thing."
+    />
+
+    <style is:global>
+      @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+      :root {
+        --bg: #141414;
+        --ink: #f2e5b7;
+        --gold: #f0b323;
+        --red: #d84b3a;
+        --hero-progress: 0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        overflow-x: hidden;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      img {
+        display: block;
+        max-width: 100%;
+      }
+
+      .pixel-font {
+        font-family: 'Press Start 2P', monospace;
+      }
+
+      .page {
+        position: relative;
+        min-height: 100vh;
+        background: var(--bg);
+      }
+
+      .shell {
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-section {
+        position: relative;
+        height: 180vh;
+      }
+
+      .hero-sticky {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+      }
+
+      .hero-inner {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        width: 100vw;
+      }
+
+      .hero-copy {
+        position: absolute;
+        z-index: 3;
+        text-align: center;
+        transform: translateY(calc(-120px + var(--scroll-parallax, 0px) + var(--hero-progress) * -40px));
+      }
+
+      .eyebrow {
+        display: none;
+      }
+
+      .hero-title {
+        margin: 0;
+        font-size: clamp(2.4rem, 8vw, 5.6rem);
+        line-height: 1.25;
+        text-transform: uppercase;
+      }
+
+      .hero-subtitle {
+        display: none;
+      }
+
+      .hero-figure {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        z-index: 2;
+        width: 100vw;
+        height: 100vh;
+        overflow: visible;
+        transform: translate(-50%, calc(-50% + var(--scroll-parallax, 0px) + var(--hero-progress) * -40px));
+        transition: transform 100ms linear;
+      }
+
+      .hill-image {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--ink);
+      }
+
+      .hill-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .hill-star {
+        position: absolute;
+        top: clamp(4rem, 10vh, 7rem);
+        right: clamp(8rem, 15vw, 13rem);
+        width: clamp(72px, 7vw, 104px);
+        z-index: 3;
+        transform-origin: center;
+        animation: starTilt 6s ease-in-out infinite;
+        filter: drop-shadow(0 0 0.75rem rgba(240, 179, 35, 0.28));
+        pointer-events: none;
+      }
+
+      .hill-star img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .foreground-hill {
+        position: absolute;
+        inset: auto -10% auto -10%;
+        top: calc(100vh - 50vh);
+        z-index: 10;
+        width: 120%;
+        left: -10%;
+        height: 80vh;
+        pointer-events: none;
+      }
+
+      .foreground-hill svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .content {
+        position: relative;
+        z-index: 11;
+        margin-top: -400px;
+        padding: 0 1.25rem 6rem;
+        background: var(--bg);
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+      }
+
+      .content-inner {
+        width: min(900px, 100%);
+        margin: 0 auto;
+      }
+
+      .divider {
+        height: 2px;
+        background: var(--ink);
+        opacity: 0.9;
+      }
+
+      .section {
+        padding: 3.5rem 0 0;
+      }
+
+      .section-kicker {
+        font-size: 0.74rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--red);
+      }
+
+      .section-title {
+        margin: 1rem 0 0;
+        font-size: clamp(1.2rem, 3vw, 1.8rem);
+        line-height: 1.9;
+        text-transform: uppercase;
+      }
+
+      .section-text {
+        margin-top: 1.5rem;
+        font-size: 1rem;
+        line-height: 2;
+      }
+
+      .steps {
+        display: grid;
+        gap: 1.7rem;
+        margin-top: 2rem;
+      }
+
+      .step {
+        display: grid;
+        grid-template-columns: 3.4rem 1fr;
+        gap: 1rem;
+        align-items: start;
+      }
+
+      .step-number {
+        font-size: 0.8rem;
+        line-height: 2;
+        color: var(--gold);
+      }
+
+      .step-title {
+        font-size: 0.85rem;
+        line-height: 1.9;
+        text-transform: uppercase;
+      }
+
+      .step-body {
+        margin-top: 0.55rem;
+        font-size: 0.98rem;
+        line-height: 1.95;
+      }
+
+      .center-button {
+        display: flex;
+        justify-content: center;
+        padding-top: 2.7rem;
+      }
+
+      .bullet-list {
+        padding: 0;
+        margin: 1.4rem 0 0;
+        list-style: none;
+      }
+
+      .bullet-list li {
+        margin-top: 0.9rem;
+        font-size: 1rem;
+        line-height: 2;
+      }
+
+      .muted-note {
+        color: color-mix(in srgb, var(--ink) 86%, var(--bg));
+      }
+
+      @keyframes starTilt {
+        0%, 100% { transform: rotate(-7deg) translateY(0px); }
+        50% { transform: rotate(7deg) translateY(-4px); }
+      }
+
+      @media (max-width: 720px) {
+        .hero-inner {
+          padding-top: 8.4rem;
+        }
+
+        .hero-figure {
+          width: min(560px, 92vw);
+          top: 58%;
+        }
+
+        .hill-star {
+          top: 5.25rem;
+          right: 4.25rem;
+          width: 64px;
+        }
+
+        .step {
+          grid-template-columns: 1fr;
+          gap: 0.4rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        .hill-star {
+          animation: none;
+        }
+
+        .hero-copy,
+        .hero-figure,
+        .foreground-hill {
+          transition: none;
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page">
+      <BlueprintBackground />
+
+      <Navigation />
+
+      <div class="shell">
+        <section class="hero-section" data-hero>
+          <div class="hero-sticky">
+            <div class="hero-inner">
+              <div class="hero-copy">
+                <h1 class="hero-title pixel-font">Waypoint</h1>
+              </div>
+
+              <div class="hero-figure" aria-hidden="true">
+                <div class="hill-image">
+                  <img src={IMAGES.heroPlaceholder} alt="Waypoint hero image placeholder" />
+                </div>
+
+                <div class="hill-star">
+                  <img src={IMAGES.starHero} alt="Waypoint star decoration" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="foreground-hill" aria-hidden="true">
+          <svg viewBox="0 0 1440 480" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" width="1600" height="600">
+            <path
+              d="M0 330C110 284 177 263 265 263C369 263 431 304 517 304C623 304 726 225 840 225C946 225 1004 273 1107 273C1206 273 1297 226 1440 166V480H0V330Z"
+              fill="var(--bg)"
+              stroke="var(--ink)"
+              stroke-width="2"
+            />
+            <path
+              d="M0 340C121 292 191 277 274 277C366 277 430 315 521 315C635 315 726 239 841 239C954 239 1024 286 1115 286C1229 286 1317 236 1440 183"
+              fill="none"
+              stroke="var(--gold)"
+              stroke-width="2"
+              opacity="0.95"
+            />
+            <path
+              d="M0 363C130 319 214 309 312 309C395 309 473 337 563 337C664 337 733 286 840 286C942 286 1040 324 1128 324C1233 324 1312 293 1440 229"
+              fill="none"
+              stroke="var(--red)"
+              stroke-width="2"
+              opacity="0.82"
+            />
+          </svg>
+        </div>
+
+        <main class="content">
+          <div class="content-inner">
+            <div class="divider"></div>
+
+            <section class="section" aria-labelledby="steps-title">
+              <div class="section-kicker pixel-font">01 02 03</div>
+              <h2 id="steps-title" class="section-title pixel-font">How Waypoint works</h2>
+
+              <div class="steps">
+                <article class="step">
+                  <div class="step-number pixel-font">01</div>
+                  <div>
+                    <div class="step-title pixel-font">Design the control PCB</div>
+                    <div class="step-body">
+                      Plan the board that will run your robot, including power, motor outputs, sensors, and the rest of your control stack.
+                    </div>
+                  </div>
+                </article>
+
+                <article class="step">
+                  <div class="step-number pixel-font">02</div>
+                  <div>
+                    <div class="step-title pixel-font">Design the chassis</div>
+                    <div class="step-body">
+                      Build the robot around your board. Shape the frame, choose the layout, and define how the machine is meant to move and operate.
+                    </div>
+                  </div>
+                </article>
+
+                <article class="step">
+                  <div class="step-number pixel-font">03</div>
+                  <div>
+                    <div class="step-title pixel-font">Ship your design</div>
+                    <div class="step-body">
+                      Once your design is ready, your robot design gets sent to you so you can turn the project into a real ROS2 robot build.
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="center-button">
+                <Button href={GUIDES_URL}>
+                  Open the guide
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M5 12h14"></path>
+                    <path d="M13 5l7 7-7 7"></path>
+                  </svg>
+                </Button>
+              </div>
+            </section>
+
+            <section class="section" id="how-it-works" aria-labelledby="how-title">
+              <div class="divider"></div>
+              <div style="padding-top: 3rem;">
+                <div class="section-kicker pixel-font">How it works</div>
+                <h2 id="how-title" class="section-title pixel-font">GitHub and Slack first</h2>
+                <p class="section-text">
+                  Waypoint is meant to be lightweight to run. The site is the front door, while the actual program can live in GitHub, Slack, and a deep guide that walks people through the entire robot design process.
+                </p>
+
+                <ul class="bullet-list">
+                  <li>→ Use the guide to go from PCB planning to chassis design to final submission.</li>
+                  <li>→ Use GitHub for files, progress, and design iteration.</li>
+                  <li>→ Use Slack for support, feedback, and build help.</li>
+                  <li class="muted-note">→ If participants spend extra time building additional robot features, they can also receive a grant to make those features real.</li>
+                </ul>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script is:inline>
+      const hero = document.querySelector('[data-hero]');
+
+      const updateHeroProgress = () => {
+        if (!hero) return;
+        const rect = hero.getBoundingClientRect();
+        const total = hero.offsetHeight - window.innerHeight;
+        const progress = Math.max(0, Math.min(1, -rect.top / Math.max(total, 1)));
+        document.documentElement.style.setProperty('--hero-progress', progress.toFixed(4));
+      };
+
+      const updateScrollOffset = () => {
+        const scrollY = window.scrollY;
+        // Move hero image up slightly as user scrolls (35% of scroll speed)
+        const parallax = -scrollY * 0.35;
+        document.documentElement.style.setProperty('--scroll-parallax', parallax + 'px');
+      };
+
+      updateHeroProgress();
+      updateScrollOffset();
+      window.addEventListener('scroll', () => {
+        updateHeroProgress();
+        updateScrollOffset();
+      }, { passive: true });
+      window.addEventListener('resize', updateHeroProgress);
+    </script>
+  </body>
+</html>

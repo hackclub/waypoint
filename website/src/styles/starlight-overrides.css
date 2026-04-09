@@ -1,0 +1,294 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root,
+:root[data-theme='dark'],
+:root[data-theme='light'] {
+  --bg: #141414;
+  --ink: #f2e5b7;
+  --gold: #f0b323;
+  --red: #d84b3a;
+
+  --sl-font: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --sl-font-system: var(--sl-font);
+
+  --sl-color-white: var(--ink);
+  --sl-color-gray-1: color-mix(in srgb, var(--ink) 92%, var(--bg));
+  --sl-color-gray-2: color-mix(in srgb, var(--ink) 76%, var(--bg));
+  --sl-color-gray-3: color-mix(in srgb, var(--ink) 58%, var(--bg));
+  --sl-color-gray-4: color-mix(in srgb, var(--ink) 38%, var(--bg));
+  --sl-color-gray-5: color-mix(in srgb, var(--ink) 22%, var(--bg));
+  --sl-color-gray-6: color-mix(in srgb, var(--ink) 10%, var(--bg));
+  --sl-color-black: var(--bg);
+
+  --sl-color-accent-high: color-mix(in srgb, var(--gold) 55%, white);
+  --sl-color-accent: var(--gold);
+  --sl-color-accent-low: color-mix(in srgb, var(--gold) 22%, var(--bg));
+
+  --sl-color-orange-high: color-mix(in srgb, var(--gold) 60%, white);
+  --sl-color-orange: var(--gold);
+  --sl-color-orange-low: color-mix(in srgb, var(--gold) 22%, var(--bg));
+  --sl-color-red-high: color-mix(in srgb, var(--red) 55%, white);
+  --sl-color-red: var(--red);
+  --sl-color-red-low: color-mix(in srgb, var(--red) 24%, var(--bg));
+  --sl-color-blue-high: color-mix(in srgb, var(--ink) 85%, var(--gold) 15%);
+  --sl-color-blue: var(--gold);
+  --sl-color-blue-low: color-mix(in srgb, var(--gold) 18%, var(--bg));
+  --sl-color-green-high: color-mix(in srgb, var(--ink) 75%, var(--gold) 25%);
+  --sl-color-green: color-mix(in srgb, var(--ink) 45%, var(--gold) 55%);
+  --sl-color-green-low: color-mix(in srgb, var(--ink) 10%, var(--bg));
+  --sl-color-purple-high: color-mix(in srgb, var(--gold) 70%, var(--red) 30%);
+  --sl-color-purple: color-mix(in srgb, var(--gold) 55%, var(--red) 45%);
+  --sl-color-purple-low: color-mix(in srgb, var(--red) 18%, var(--bg));
+
+  --sl-color-text: var(--ink);
+  --sl-color-text-accent: var(--gold);
+  --sl-color-text-invert: var(--bg);
+  --sl-color-bg: var(--bg);
+  --sl-color-bg-nav: rgba(20, 20, 20, 0.94);
+  --sl-color-bg-sidebar: rgba(20, 20, 20, 0.9);
+  --sl-color-bg-inline-code: rgba(240, 179, 35, 0.14);
+  --sl-color-bg-accent: var(--gold);
+  --sl-color-hairline-light: rgba(242, 229, 183, 0.12);
+  --sl-color-hairline-shade: rgba(242, 229, 183, 0.2);
+  --sl-color-hairline: rgba(242, 229, 183, 0.14);
+  --sl-color-backdrop-overlay: rgba(20, 20, 20, 0.7);
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--bg) !important;
+}
+
+body,
+.sl-root,
+.page,
+.main-frame,
+.content-panel {
+  background: var(--bg) !important;
+  color: var(--ink) !important;
+  font-family: var(--sl-font) !important;
+}
+
+.header,
+.sidebar-pane,
+.right-sidebar-panel,
+.main-frame,
+.content-panel,
+.sl-container,
+.right-sidebar,
+.sidebar-content,
+.sl-markdown-content :is(.card, .sl-card, table),
+.sl-markdown-content :is(.starlight-aside, aside),
+.mobile-table-of-contents,
+.pagination-links {
+  background-color: var(--bg) !important;
+}
+
+.header,
+.sidebar-pane,
+.right-sidebar-panel,
+.content-panel {
+  backdrop-filter: blur(10px);
+}
+
+.content-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.content-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(20, 20, 20, 0.9), rgba(20, 20, 20, 0.95)),
+    url('/blueprint-bg.svg');
+  background-position: center;
+  background-size: cover;
+  opacity: 0.34;
+  z-index: 0;
+}
+
+.content-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.hero,
+.site-title,
+.sl-markdown-content :is(h1, h2, h3, h4, h5, h6) {
+  font-family: 'Press Start 2P', monospace !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.site-title {
+  color: var(--gold) !important;
+}
+
+.sl-markdown-content {
+  color: var(--ink);
+  line-height: 1.9;
+}
+
+.sl-markdown-content a:not(.sl-link-button) {
+  color: var(--gold);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+}
+
+.sl-markdown-content a:not(.sl-link-button):hover {
+  color: var(--red);
+}
+
+.sl-markdown-content :is(code:not(pre code), kbd) {
+  border: 1px solid rgba(240, 179, 35, 0.28);
+  border-radius: 0;
+}
+
+.sl-markdown-content pre,
+.astro-code {
+  border: 1px solid rgba(242, 229, 183, 0.14);
+  box-shadow: 6px 6px 0 rgba(216, 75, 58, 0.24);
+}
+
+.sl-markdown-content blockquote {
+  border-inline-start-color: var(--red);
+  background: rgba(216, 75, 58, 0.08);
+}
+
+.sl-link-button,
+.sl-markdown-content .button,
+.sl-markdown-content a.button,
+.sl-markdown-content button,
+.pagination-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  padding: 1rem 1.25rem;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: var(--gold);
+  color: var(--bg);
+  box-shadow: 6px 6px 0 var(--red);
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    background-color 120ms ease,
+    color 120ms ease;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.sl-link-button:hover,
+.sl-markdown-content .button:hover,
+.sl-markdown-content a.button:hover,
+.sl-markdown-content button:hover,
+.pagination-links a:hover {
+  background: var(--red);
+  color: var(--ink);
+  box-shadow: 2px 2px 0 var(--gold);
+  transform: translate(-2px, -2px);
+}
+
+.pagination-links {
+  gap: 1.25rem;
+}
+
+.pagination-links a {
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 100%;
+  color: var(--bg) !important;
+  border-color: var(--ink) !important;
+  box-shadow: 6px 6px 0 var(--red) !important;
+  overflow-wrap: anywhere;
+}
+
+.pagination-links [rel='next'] {
+  justify-content: flex-end;
+  text-align: end;
+  flex-direction: row-reverse;
+}
+
+.pagination-links a > span {
+  flex: 1;
+}
+
+.pagination-links [rel='next'] > span {
+  text-align: end;
+}
+
+.pagination-links .link-title {
+  display: inline-block;
+  margin-top: 0.45rem;
+  color: var(--bg) !important;
+  font-family: 'Press Start 2P', monospace !important;
+  font-size: clamp(0.72rem, 1.4vw, 0.95rem) !important;
+  line-height: 1.8 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pagination-links svg {
+  flex-shrink: 0;
+}
+
+.sidebar-pane a,
+.right-sidebar-panel a {
+  border-radius: 0 !important;
+}
+
+.sidebar-pane [aria-current='page'] {
+  box-shadow: 4px 4px 0 rgba(216, 75, 58, 0.24);
+}
+
+.right-sidebar-panel h2,
+.sidebar-pane .large {
+  font-family: 'Press Start 2P', monospace !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sl-markdown-content :is(.card, .sl-card, table) {
+  background: var(--bg);
+}
+
+.sl-markdown-content table {
+  border-color: var(--sl-color-hairline-shade);
+}
+
+.sl-markdown-content th,
+.sl-markdown-content td {
+  border-color: var(--sl-color-hairline);
+}
+
+.sl-markdown-content :is(.starlight-aside, aside) {
+  border-radius: 0;
+}
+
+.sl-navbar [data-id='search'],
+.sl-navbar [data-id='theme-toggle'],
+.sl-search,
+.sl-theme-toggle,
+[data-starlight-theme-select] {
+  display: none !important;
+}
+
+@media (max-width: 50rem) {
+  .site-title {
+    font-size: 0.8rem;
+  }
+}
