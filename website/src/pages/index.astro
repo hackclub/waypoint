@@ -2,6 +2,7 @@
 import Navigation from '../components/Navigation.astro';
 import Button from '../components/Button.astro';
 import BlueprintBackground from '../components/BlueprintBackground.astro';
+import { SITE_LOADER_CSS, SITE_LOADER_SCRIPT } from '../lib/site-loader.mjs';
 import { IMAGES, LINKS } from '../config';
 
 const GUIDES_URL = LINKS.guides;
@@ -12,11 +13,15 @@ const GUIDES_URL = LINKS.guides;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/star-hero.svg" />
+    <link rel="shortcut icon" href="/star-hero.svg" />
     <title>Waypoint!</title>
     <meta
       name="description"
       content="Waypoint is a ROS2 Robotics YSWS where you design your own control PCB and robot chassis, then ship your design for the real thing."
     />
+    <style set:html={SITE_LOADER_CSS}></style>
+    <script set:html={SITE_LOADER_SCRIPT}></script>
 
     <style is:global>
       @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
@@ -27,6 +32,7 @@ const GUIDES_URL = LINKS.guides;
         --gold: #f0b323;
         --red: #d84b3a;
         --hero-progress: 0;
+        --scroll-parallax: 0px;
       }
 
       * {
@@ -92,9 +98,11 @@ const GUIDES_URL = LINKS.guides;
 
       .hero-copy {
         position: absolute;
-        z-index: 3;
+        z-index: 4;
         text-align: center;
-        transform: translateY(calc(-120px + var(--scroll-parallax, 0px) + var(--hero-progress) * -40px));
+        transform: translate3d(0, -120px, 0);
+        will-change: transform;
+        pointer-events: none;
       }
 
       .eyebrow {
@@ -117,11 +125,14 @@ const GUIDES_URL = LINKS.guides;
         left: 50%;
         top: 50%;
         z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 100vw;
         height: 100vh;
         overflow: visible;
-        transform: translate(-50%, calc(-50% + var(--scroll-parallax, 0px) + var(--hero-progress) * -40px));
-        transition: transform 100ms linear;
+        transform: translate3d(-50%, calc(-50% + var(--scroll-parallax) + var(--hero-progress) * -40px), 0);
+        will-change: transform;
       }
 
       .hill-image {
@@ -162,12 +173,15 @@ const GUIDES_URL = LINKS.guides;
 
       .foreground-hill {
         position: absolute;
-        inset: auto -10% auto -10%;
-        top: calc(100vh - 50vh);
-        z-index: 10;
-        width: 120%;
-        left: -10%;
+        left: 50%;
+        bottom: calc(100% + var(--foreground-hill-offset));
+        z-index: -1;
+        display: flex;
+        align-items: flex-end;
+        width: 120vw;
+        min-width: 100%;
         height: 80vh;
+        transform: translateX(-50%);
         pointer-events: none;
       }
 
@@ -178,16 +192,29 @@ const GUIDES_URL = LINKS.guides;
       }
 
       .content {
+        --foreground-hill-offset: -80px;
+        --foreground-cover-height: 20px;
         position: relative;
+        isolation: isolate;
         z-index: 11;
-        margin-top: -400px;
+        margin-top: -600px;
         padding: 0 1.25rem 6rem;
-        background: var(--bg);
+        background: transparent;
         width: 100vw;
         margin-left: calc(-50vw + 50%);
       }
 
+      .content::before {
+        content: '';
+        position: absolute;
+        inset: calc(-1 * var(--foreground-cover-height)) 0 0;
+        z-index: 0;
+        background: var(--bg);
+      }
+
       .content-inner {
+        position: relative;
+        z-index: 1;
         width: min(900px, 100%);
         margin: 0 auto;
       }
@@ -312,8 +339,7 @@ const GUIDES_URL = LINKS.guides;
         }
 
         .hero-copy,
-        .hero-figure,
-        .foreground-hill {
+        .hero-figure {
           transition: none;
           transform: none;
         }
@@ -331,13 +357,13 @@ const GUIDES_URL = LINKS.guides;
         <section class="hero-section" data-hero>
           <div class="hero-sticky">
             <div class="hero-inner">
-              <div class="hero-copy">
-                <h1 class="hero-title pixel-font">Waypoint</h1>
-              </div>
-
               <div class="hero-figure" aria-hidden="true">
                 <div class="hill-image">
                   <img src={IMAGES.heroPlaceholder} alt="Waypoint hero image placeholder" />
+                </div>
+
+                <div class="hero-copy">
+                  <h1 class="hero-title pixel-font">Waypoint</h1>
                 </div>
 
                 <div class="hill-star">
@@ -348,32 +374,32 @@ const GUIDES_URL = LINKS.guides;
           </div>
         </section>
 
-        <div class="foreground-hill" aria-hidden="true">
-          <svg viewBox="0 0 1440 480" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" width="1600" height="600">
-            <path
-              d="M0 330C110 284 177 263 265 263C369 263 431 304 517 304C623 304 726 225 840 225C946 225 1004 273 1107 273C1206 273 1297 226 1440 166V480H0V330Z"
-              fill="var(--bg)"
-              stroke="var(--ink)"
-              stroke-width="2"
-            />
-            <path
-              d="M0 340C121 292 191 277 274 277C366 277 430 315 521 315C635 315 726 239 841 239C954 239 1024 286 1115 286C1229 286 1317 236 1440 183"
-              fill="none"
-              stroke="var(--gold)"
-              stroke-width="2"
-              opacity="0.95"
-            />
-            <path
-              d="M0 363C130 319 214 309 312 309C395 309 473 337 563 337C664 337 733 286 840 286C942 286 1040 324 1128 324C1233 324 1312 293 1440 229"
-              fill="none"
-              stroke="var(--red)"
-              stroke-width="2"
-              opacity="0.82"
-            />
-          </svg>
-        </div>
-
         <main class="content">
+          <div class="foreground-hill" aria-hidden="true">
+            <svg viewBox="0 0 1440 480" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" width="1600" height="600">
+              <path
+                d="M0 330C110 284 177 263 265 263C369 263 431 304 517 304C623 304 726 225 840 225C946 225 1004 273 1107 273C1206 273 1297 226 1440 166V480H0V330Z"
+                fill="var(--bg)"
+                stroke="var(--ink)"
+                stroke-width="2"
+              />
+              <path
+                d="M0 340C121 292 191 277 274 277C366 277 430 315 521 315C635 315 726 239 841 239C954 239 1024 286 1115 286C1229 286 1317 236 1440 183"
+                fill="none"
+                stroke="var(--gold)"
+                stroke-width="2"
+                opacity="0.95"
+              />
+              <path
+                d="M0 363C130 319 214 309 312 309C395 309 473 337 563 337C664 337 733 286 840 286C942 286 1040 324 1128 324C1233 324 1312 293 1440 229"
+                fill="none"
+                stroke="var(--red)"
+                stroke-width="2"
+                opacity="0.82"
+              />
+            </svg>
+          </div>
+
           <div class="content-inner">
             <div class="divider"></div>
 
@@ -448,29 +474,49 @@ const GUIDES_URL = LINKS.guides;
 
     <script is:inline>
       const hero = document.querySelector('[data-hero]');
+      const root = document.documentElement;
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      const updateHeroProgress = () => {
+      let targetProgress = 0;
+      let currentProgress = 0;
+      let targetParallax = 0;
+      let currentParallax = 0;
+      let rafId = 0;
+
+      const measureTargets = () => {
         if (!hero) return;
         const rect = hero.getBoundingClientRect();
         const total = hero.offsetHeight - window.innerHeight;
-        const progress = Math.max(0, Math.min(1, -rect.top / Math.max(total, 1)));
-        document.documentElement.style.setProperty('--hero-progress', progress.toFixed(4));
+        targetProgress = Math.max(0, Math.min(1, -rect.top / Math.max(total, 1)));
+        targetParallax = -window.scrollY * 0.35;
       };
 
-      const updateScrollOffset = () => {
-        const scrollY = window.scrollY;
-        // Move hero image up slightly as user scrolls (35% of scroll speed)
-        const parallax = -scrollY * 0.35;
-        document.documentElement.style.setProperty('--scroll-parallax', parallax + 'px');
+      const render = () => {
+        const easing = prefersReducedMotion ? 1 : 0.14;
+        currentProgress += (targetProgress - currentProgress) * easing;
+        currentParallax += (targetParallax - currentParallax) * easing;
+
+        if (Math.abs(targetProgress - currentProgress) < 0.0005) currentProgress = targetProgress;
+        if (Math.abs(targetParallax - currentParallax) < 0.1) currentParallax = targetParallax;
+
+        root.style.setProperty('--hero-progress', currentProgress.toFixed(4));
+        root.style.setProperty('--scroll-parallax', `${currentParallax.toFixed(2)}px`);
+
+        if (currentProgress !== targetProgress || currentParallax !== targetParallax) {
+          rafId = window.requestAnimationFrame(render);
+        } else {
+          rafId = 0;
+        }
       };
 
-      updateHeroProgress();
-      updateScrollOffset();
-      window.addEventListener('scroll', () => {
-        updateHeroProgress();
-        updateScrollOffset();
-      }, { passive: true });
-      window.addEventListener('resize', updateHeroProgress);
+      const scheduleRender = () => {
+        measureTargets();
+        if (!rafId) rafId = window.requestAnimationFrame(render);
+      };
+
+      scheduleRender();
+      window.addEventListener('scroll', scheduleRender, { passive: true });
+      window.addEventListener('resize', scheduleRender);
     </script>
   </body>
 </html>
