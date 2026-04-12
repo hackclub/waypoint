@@ -138,8 +138,16 @@ export const SITE_LOADER_SCRIPT = `
   const selector = 'picture, img, iframe, video, object, embed, [data-load-watch]';
   const shellClass = 'site-load-shell';
   const loadingClass = 'is-site-loading';
+  const pageLoaderDelayMs = 50;
+  let pageReady = false;
+  let pageLoaderTimer = 0;
 
-  root.dataset.siteLoading = 'pending';
+  root.dataset.siteLoading = 'idle';
+
+  pageLoaderTimer = window.setTimeout(() => {
+    if (pageReady) return;
+    root.dataset.siteLoading = 'pending';
+  }, pageLoaderDelayMs);
 
   function isWatchTarget(el) {
     return el.hasAttribute('data-load-watch');
@@ -225,6 +233,8 @@ export const SITE_LOADER_SCRIPT = `
   }
 
   function markPageReady() {
+    pageReady = true;
+    window.clearTimeout(pageLoaderTimer);
     root.dataset.siteLoading = 'ready';
   }
 

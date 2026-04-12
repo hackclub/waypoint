@@ -18,7 +18,7 @@ const GUIDES_URL = LINKS.guides;
     <title>Waypoint!</title>
     <meta
       name="description"
-      content="Waypoint is a ROS2 Robotics YSWS where you design your own control PCB and robot chassis, then ship your design for the real thing."
+      content="Waypoint is a program where students design a custom control PCB, robot chassis, and starter ROS2 package, then get the resources to bring that robot to life."
     />
     <style set:html={SITE_LOADER_CSS}></style>
     <script set:html={SITE_LOADER_SCRIPT}></script>
@@ -117,7 +117,12 @@ const GUIDES_URL = LINKS.guides;
       }
 
       .hero-subtitle {
-        display: none;
+        display: block;
+        margin: 1.5rem auto 0;
+        max-width: min(760px, calc(100vw - 3rem));
+        font-size: clamp(0.9rem, 2vw, 1.08rem);
+        line-height: 1.9;
+        color: color-mix(in srgb, var(--ink) 92%, var(--bg));
       }
 
       .hero-figure {
@@ -283,7 +288,7 @@ const GUIDES_URL = LINKS.guides;
       .center-button {
         display: flex;
         justify-content: center;
-        padding-top: 2.7rem;
+        padding-top: 2rem;
       }
 
       .bullet-list {
@@ -359,7 +364,7 @@ const GUIDES_URL = LINKS.guides;
             <div class="hero-inner">
               <div class="hero-figure" aria-hidden="true">
                 <div class="hill-image">
-                  <img src={IMAGES.heroPlaceholder} alt="Waypoint hero image placeholder" />
+                  <!-- <img src={IMAGES.heroPlaceholder} alt="Waypoint hero image placeholder" /> -->
                 </div>
 
                 <div class="hero-copy">
@@ -405,7 +410,9 @@ const GUIDES_URL = LINKS.guides;
 
             <section class="section" aria-labelledby="steps-title">
               <div class="section-kicker pixel-font">01 02 03</div>
-              <h2 id="steps-title" class="section-title pixel-font">How Waypoint works</h2>
+              <h2 id="steps-title" class="section-title pixel-font">Create a ROS2 robot</h2>
+
+              
 
               <div class="steps">
                 <article class="step">
@@ -413,7 +420,7 @@ const GUIDES_URL = LINKS.guides;
                   <div>
                     <div class="step-title pixel-font">Design the control PCB</div>
                     <div class="step-body">
-                      Plan the board that will run your robot, including power, motor outputs, sensors, and the rest of your control stack.
+                      Build the custom board that powers your robot, drives motors, reads sensors, and acts as the center of the whole system.
                     </div>
                   </div>
                 </article>
@@ -423,7 +430,7 @@ const GUIDES_URL = LINKS.guides;
                   <div>
                     <div class="step-title pixel-font">Design the chassis</div>
                     <div class="step-body">
-                      Build the robot around your board. Shape the frame, choose the layout, and define how the machine is meant to move and operate.
+                      Design the body your robot lives in, from its looks to the way it moves through the world.
                     </div>
                   </div>
                 </article>
@@ -431,13 +438,17 @@ const GUIDES_URL = LINKS.guides;
                 <article class="step">
                   <div class="step-number pixel-font">03</div>
                   <div>
-                    <div class="step-title pixel-font">Ship your design</div>
+                    <div class="step-title pixel-font">Build the starter ROS2 package</div>
                     <div class="step-body">
-                      Once your design is ready, your robot design gets sent to you so you can turn the project into a real ROS2 robot build.
+                      Give your robot a software starting point so its ready to become a real ROS2 build.
                     </div>
                   </div>
                 </article>
               </div>
+
+              <p class="section-text">
+                Don't know where to start? Check out the guide for detailed instructions, tips, and resources!
+              </p>
 
               <div class="center-button">
                 <Button href={GUIDES_URL}>
@@ -454,17 +465,10 @@ const GUIDES_URL = LINKS.guides;
               <div class="divider"></div>
               <div style="padding-top: 3rem;">
                 <div class="section-kicker pixel-font">How it works</div>
-                <h2 id="how-title" class="section-title pixel-font">GitHub and Slack first</h2>
+                <h2 id="how-title" class="section-title pixel-font">What exactly is this?</h2>
                 <p class="section-text">
-                  Waypoint is meant to be lightweight to run. The site is the front door, while the actual program can live in GitHub, Slack, and a deep guide that walks people through the entire robot design process.
+                  Waypoint is a You Ship, We Ship (YSWS) where you design your own robot, give it code, and then we ship your design to you! Join the Slack to stay up to date, ask questions, and see what other people are building.
                 </p>
-
-                <ul class="bullet-list">
-                  <li>→ Use the guide to go from PCB planning to chassis design to final submission.</li>
-                  <li>→ Use GitHub for files, progress, and design iteration.</li>
-                  <li>→ Use Slack for support, feedback, and build help.</li>
-                  <li class="muted-note">→ If participants spend extra time building additional robot features, they can also receive a grant to make those features real.</li>
-                </ul>
               </div>
             </section>
           </div>

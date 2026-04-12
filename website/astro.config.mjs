@@ -4,7 +4,11 @@ import starlight from '@astrojs/starlight';
 import { SITE_LOADER_CSS, SITE_LOADER_SCRIPT } from './src/lib/site-loader.mjs';
 
 // https://astro.build/config
+const site = process.env.SITE_URL ?? 'https://waypoint.loganpeterson.org';
+
 export default defineConfig({
+	site,
+	output: 'static',
 	integrations: [
 		starlight({
 			title: 'Waypoint',
@@ -25,6 +29,9 @@ export default defineConfig({
 			],
 			sidebar: [
 				{ label: 'First Steps', slug: 'guides/first-steps' },
+				{ label: 'PCB Guide', slug: 'guides/pcb-guide' },
+				{ label: 'Chassis Guide', slug: 'guides/chassis-guide' },
+				{ label: 'ROS2 Package Guide', slug: 'guides/ros2-package-guide' },
 				   {
 					   label: 'Reference',
 					   autogenerate: { directory: 'reference' },

@@ -3,60 +3,25 @@ title: First Steps
 description: A guide to getting started with Waypoint.
 ---
 
-Guides lead a user through a specific task they want to accomplish, often with a sequence of steps.
-Writing a good guide requires thinking about what your users are trying to do.
+Hey there! Want to make your own ROS2 robot but have no clue where to start? Your in the right place!
 
-## Further reading
+In this guide, we'll go over everything needed to make a simple Automated Ground Vehicle (AGV) as an example, step-by step.
 
-- Read [about how-to guides](https://diataxis.fr/how-to-guides/) in the Diátaxis framework
+For a full submission, you will have to edit it to be your own (add a screen? a sensor? a manipulator? up to you!)
 
-words words words
+This process is going to be broken down into 3 parts, each explained in further detail:
 
-words words words
+1. Control PCB Design
+ - Drawing the schematic
+ - Routing the PCB
+ - Defining the edges
+ - Adding art!
+2. Robot Chassis Design
+ - Creating the base
+ - Adding Motor Mounts
+ - Adding PCB Mounts
+ - Creating the top plate
+3. Creating a ROS2 Package
 
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
-
-words words words
+### Other Section?
 
