@@ -1,0 +1,68 @@
+---
+title: Guide Add-ins
+description: Reusable blocks for Waypoint guide pages.
+---
+
+import GuideStop from '../../../components/GuideStop.astro';
+import GuideVideo from '../../../components/GuideVideo.astro';
+
+Use these blocks when a guide needs extra structure.
+
+## Code Blocks
+
+Add a language after the opening fence when you can:
+
+```bash title="terminal"
+ros2 pkg create waypoint_robot --build-type ament_python
+cd waypoint_robot
+```
+
+```cpp title="motor-test.cpp"
+void loop() {
+  setMotorPower(leftMotor, 120);
+  setMotorPower(rightMotor, 120);
+}
+```
+
+Inline code like `ros2 launch` and `package.xml` uses the same solid-color system.
+
+## Tips
+
+:::tip[Tip]
+Use tips for helpful shortcuts, reminders, or beginner-friendly context.
+:::
+
+## Warnings
+
+:::caution[Warning]
+Use warnings when a step can break hardware, waste parts, or create confusing debugging problems.
+:::
+
+## STOP Sections
+
+<GuideStop>
+Do not continue until your wiring, voltage, and motor driver orientation match your schematic.
+</GuideStop>
+
+## Video Embeds
+
+Use `GuideVideo` for walkthroughs, demos, or short build clips.
+
+<GuideVideo title="Video placeholder" caption="Replace this placeholder with a real embed URL when the guide has a video." />
+
+```mdx title="video-embed.mdx"
+import GuideVideo from '../../../components/GuideVideo.astro';
+
+<GuideVideo
+  title="PCB routing walkthrough"
+  src="https://www.youtube.com/embed/VIDEO_ID"
+  caption="A short walkthrough for routing the control PCB."
+/>
+```
+
+## Expandable Details
+
+<details>
+  <summary>When should I use details?</summary>
+  Use details for optional explanations, troubleshooting notes, or extra context that would interrupt the main route.
+</details>

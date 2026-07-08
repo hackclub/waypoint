@@ -152,12 +152,168 @@ h6,
 .sl-markdown-content :is(code:not(pre code), kbd) {
   border: 1px solid rgba(240, 179, 35, 0.28);
   border-radius: 0;
+  background: var(--gold);
+  color: var(--bg);
+  padding: 0.12rem 0.3rem;
+  font-weight: 600;
+}
+
+.sl-markdown-content .expressive-code {
+  position: relative;
+  isolation: isolate;
+  margin: 1.6rem 0;
+}
+
+.sl-markdown-content .expressive-code::before {
+  content: '';
+  position: absolute;
+  inset: 8px -8px -8px 8px;
+  z-index: -1;
+  background: var(--red);
+}
+
+.sl-markdown-content .expressive-code .frame {
+  position: relative;
+  z-index: 1;
+  border: 2px solid var(--ink) !important;
+  border-radius: 0 !important;
+  background: var(--bg) !important;
+  box-shadow: none !important;
+  overflow: hidden;
+}
+
+.sl-markdown-content .expressive-code figure.frame.has-title .header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 0.55rem !important;
+  min-height: 2.25rem !important;
+  padding: 0.32rem 0.6rem !important;
+  border: 0 !important;
+  border-bottom: 2px solid var(--ink) !important;
+  border-radius: 0 !important;
+  background: var(--ink) !important;
+  color: var(--bg) !important;
+}
+
+.sl-markdown-content .expressive-code figure.frame.has-title .header::before {
+  content: none !important;
+  display: none !important;
+}
+
+.sl-markdown-content .expressive-code figure.frame.has-title .header::after {
+  content: '_ [] X' !important;
+  position: static !important;
+  inset: auto !important;
+  display: block !important;
+  margin-left: auto;
+  padding-left: 1rem;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--bg);
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.08em;
+}
+
+.sl-markdown-content .expressive-code .title,
+.sl-markdown-content .expressive-code .copy button {
+  color: var(--bg) !important;
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace !important;
+  font-weight: 700 !important;
+}
+
+.sl-markdown-content .expressive-code .title {
+  display: inline-block !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.sl-markdown-content .expressive-code .title::after {
+  display: none !important;
+}
+
+.sl-markdown-content .expressive-code .copy button {
+  --copy-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='black' stroke-width='2.15' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M7 5H5v16h14V5h-2'/%3E%3Cpath d='M9 3h6v4H9z'/%3E%3Cpath d='M8 12h8M8 16h6'/%3E%3C/g%3E%3C/svg%3E");
+  position: relative;
+  display: inline-grid !important;
+  place-items: center !important;
+  width: 2.15rem !important;
+  height: 2.15rem !important;
+  min-width: 2.15rem !important;
+  padding: 0 !important;
+  border: 2px solid var(--ink) !important;
+  border-radius: 0 !important;
+  background: var(--gold) !important;
+  box-shadow: 3px 3px 0 var(--red) !important;
+  color: var(--bg) !important;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    background-color 120ms ease,
+    color 120ms ease,
+    border-color 120ms ease !important;
+}
+
+.sl-markdown-content .expressive-code .copy button div {
+  display: none !important;
+}
+
+.sl-markdown-content .expressive-code .copy button::before {
+  content: '' !important;
+  position: absolute;
+  inset: 0.46rem !important;
+  width: auto !important;
+  height: auto !important;
+  border: 0 !important;
+  background: currentColor !important;
+  transform: none !important;
+  -webkit-mask: var(--copy-icon) center / contain no-repeat;
+  mask: var(--copy-icon) center / contain no-repeat;
+}
+
+.sl-markdown-content .expressive-code .copy button::after {
+  display: none !important;
+}
+
+.sl-markdown-content .expressive-code .copy button:hover,
+.sl-markdown-content .expressive-code .copy button:focus-visible {
+  border-color: var(--gold) !important;
+  background: var(--bg) !important;
+  color: var(--gold) !important;
+  box-shadow: 2px 2px 0 var(--red) !important;
+  transform: translate(-1px, -1px);
+}
+
+.sl-markdown-content .expressive-code .copy button:focus-visible {
+  outline: 2px solid var(--gold) !important;
+  outline-offset: 3px !important;
+}
+
+.sl-markdown-content .expressive-code .copy button:active {
+  box-shadow: 0 0 0 var(--red) !important;
+  transform: translate(2px, 2px);
 }
 
 .sl-markdown-content pre,
 .astro-code {
-  border: 1px solid rgba(242, 229, 183, 0.14);
-  box-shadow: 6px 6px 0 rgba(216, 75, 58, 0.24);
+  border: 2px solid var(--ink) !important;
+  border-radius: 0 !important;
+  background: #101010 !important;
+  color: var(--ink) !important;
+  box-shadow: 6px 6px 0 rgba(216, 75, 58, 0.34);
+}
+
+.sl-markdown-content pre code,
+.astro-code code {
+  font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace !important;
+  font-size: 0.92rem;
+  line-height: 1.8;
 }
 
 .sl-markdown-content blockquote {
@@ -279,6 +435,264 @@ h6,
   border-radius: 0;
 }
 
+.sl-markdown-content .starlight-aside {
+  position: relative;
+  isolation: isolate;
+  border: 2px solid var(--ink);
+  background: var(--bg);
+  box-shadow: 8px 8px 0 var(--red);
+  color: var(--ink);
+  overflow: visible;
+}
+
+.sl-markdown-content .starlight-aside__title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: -1rem -1rem 1rem;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 2px solid var(--ink);
+  background: var(--gold);
+  color: var(--bg);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.68rem;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.sl-markdown-content .starlight-aside__icon {
+  color: currentColor;
+}
+
+.sl-markdown-content .starlight-aside__content {
+  color: var(--ink);
+}
+
+.sl-markdown-content .starlight-aside__content > :first-child {
+  margin-top: 0;
+}
+
+.sl-markdown-content .starlight-aside__content > :last-child {
+  margin-bottom: 0;
+}
+
+.sl-markdown-content .starlight-aside--note {
+  border-color: var(--ink);
+}
+
+.sl-markdown-content .starlight-aside--note .starlight-aside__title {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.sl-markdown-content .starlight-aside--tip {
+  border-color: var(--gold);
+}
+
+.sl-markdown-content .starlight-aside--tip .starlight-aside__title {
+  border-bottom-color: var(--gold);
+  background: var(--gold);
+  color: var(--bg);
+}
+
+.sl-markdown-content .starlight-aside--caution {
+  border-color: var(--gold);
+}
+
+.sl-markdown-content .starlight-aside--caution .starlight-aside__title {
+  background: var(--gold);
+  color: var(--bg);
+}
+
+.sl-markdown-content .starlight-aside--danger {
+  border-color: var(--red);
+  box-shadow: 8px 8px 0 var(--gold);
+}
+
+.sl-markdown-content .starlight-aside--danger .starlight-aside__title {
+  border-bottom-color: var(--red);
+  background: var(--red);
+  color: var(--ink);
+}
+
+.sl-markdown-content .guide-stop {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(5.5rem, auto) 1fr;
+  gap: 0;
+  margin: 1.6rem 0;
+  border: 2px solid var(--red);
+  background: var(--bg);
+  color: var(--ink);
+  box-shadow: 8px 8px 0 var(--gold);
+}
+
+.sl-markdown-content .guide-stop__badge {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  border-right: 2px solid var(--red);
+  background: var(--red);
+  color: var(--ink);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.sl-markdown-content .guide-stop__content {
+  padding: 1rem 1.1rem;
+}
+
+.sl-markdown-content .guide-stop__content > :first-child {
+  margin-top: 0;
+}
+
+.sl-markdown-content .guide-stop__content > :last-child {
+  margin-bottom: 0;
+}
+
+.sl-markdown-content .guide-video {
+  position: relative;
+  isolation: isolate;
+  margin: 1.8rem 0;
+}
+
+.sl-markdown-content .guide-video__frame,
+.sl-markdown-content :is(iframe, video):not(:where(.not-content *)) {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: var(--bg);
+  box-shadow: none;
+}
+
+.sl-markdown-content :is(iframe, video):not(:where(.not-content *, .guide-video__frame *)) {
+  box-shadow: 8px 8px 0 var(--red);
+}
+
+.sl-markdown-content .guide-video__frame::before {
+  display: none;
+}
+
+.sl-markdown-content .guide-video__frame {
+  overflow: visible;
+  box-shadow: 8px 8px 0 var(--red);
+}
+
+.sl-markdown-content .guide-video__frame iframe,
+.sl-markdown-content .guide-video__frame video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #101010;
+}
+
+.sl-markdown-content iframe:not(:where(.not-content *)),
+.sl-markdown-content video:not(:where(.not-content *)) {
+  display: block;
+  background: #101010;
+}
+
+.sl-markdown-content .guide-video__placeholder {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: 0.9rem;
+  width: 100%;
+  height: 100%;
+  min-height: 14rem;
+  padding: 1.5rem;
+  background:
+    linear-gradient(rgba(20, 20, 20, 0.15), rgba(20, 20, 20, 0.52)),
+    var(--guide-video-thumb, var(--gold));
+  background-position: center;
+  background-size: cover;
+  color: var(--ink);
+  text-align: center;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.sl-markdown-content .guide-video__play {
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 2px solid var(--ink);
+  background: var(--red);
+  box-shadow: 5px 5px 0 var(--bg);
+  clip-path: polygon(28% 18%, 28% 82%, 82% 50%);
+}
+
+.sl-markdown-content .guide-video figcaption {
+  margin-top: 0.8rem;
+  color: color-mix(in srgb, var(--ink) 76%, var(--bg));
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.sl-markdown-content details:not(:where(.not-content *)) {
+  position: relative;
+  isolation: isolate;
+  width: 100% !important;
+  margin: 1.5rem 0 !important;
+  padding: 0 1.25rem !important;
+  border: 2px solid var(--ink) !important;
+  border-inline-start: 2px solid var(--ink) !important;
+  background: var(--bg) !important;
+  box-shadow: 8px 8px 0 var(--red) !important;
+  overflow: visible !important;
+}
+
+.sl-markdown-content details:not(:where(.not-content *))[open] {
+  padding-bottom: 1.1rem !important;
+  border-color: var(--gold) !important;
+  border-inline-start-color: var(--gold) !important;
+}
+
+.sl-markdown-content details:not(:where(.not-content *)) > summary {
+  display: block;
+  margin: 0 -1.25rem !important;
+  padding: 0.8rem 1.25rem !important;
+  background: var(--ink) !important;
+  color: var(--bg) !important;
+  cursor: pointer;
+  font-weight: 700;
+  list-style: none;
+  outline: 0 !important;
+}
+
+.sl-markdown-content details:not(:where(.not-content *)) > summary:focus {
+  outline: 0 !important;
+}
+
+.sl-markdown-content details:not(:where(.not-content *)) > summary:focus-visible {
+  box-shadow: inset 0 0 0 3px var(--gold);
+  outline: 0 !important;
+}
+
+.sl-markdown-content details:not(:where(.not-content *)) > summary::marker,
+.sl-markdown-content details:not(:where(.not-content *)) > summary::-webkit-details-marker,
+.sl-markdown-content details:not(:where(.not-content *)) > summary::before {
+  display: none !important;
+}
+
+.sl-markdown-content details:not(:where(.not-content *))[open] > summary {
+  margin-bottom: 1rem !important;
+  border-bottom: 2px solid var(--gold) !important;
+  background: var(--gold) !important;
+}
+
+.sl-markdown-content details:not(:where(.not-content *)) > :not(summary) {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 .sl-navbar [data-id='search'],
 .sl-navbar [data-id='theme-toggle'],
 .sl-search,
@@ -290,5 +704,19 @@ h6,
 @media (max-width: 50rem) {
   .site-title {
     font-size: 0.8rem;
+  }
+
+  .sl-markdown-content .guide-stop {
+    grid-template-columns: 1fr;
+  }
+
+  .sl-markdown-content .guide-stop__badge {
+    border-right: 0;
+    border-bottom: 2px solid var(--red);
+  }
+
+  .sl-markdown-content pre code,
+  .astro-code code {
+    font-size: 0.84rem;
   }
 }

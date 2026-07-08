@@ -32,6 +32,7 @@ const GUIDES_URL = LINKS.guides;
         --gold: #f0b323;
         --red: #d84b3a;
         --hero-progress: 0;
+        --hero-offset: 0px;
         --scroll-parallax: 0px;
       }
 
@@ -136,7 +137,7 @@ const GUIDES_URL = LINKS.guides;
         width: 100vw;
         height: 100vh;
         overflow: visible;
-        transform: translate3d(-50%, calc(-50% + var(--scroll-parallax) + var(--hero-progress) * -40px), 0);
+        transform: translate3d(-50%, calc(-50% + var(--scroll-parallax) + var(--hero-offset)), 0);
         will-change: transform;
       }
 
@@ -340,13 +341,16 @@ const GUIDES_URL = LINKS.guides;
         }
 
         .hill-star {
-          animation: none;
+          animation-duration: 12s;
         }
 
         .hero-copy,
         .hero-figure {
           transition: none;
-          transform: none;
+        }
+
+        .hero-figure {
+          transform: translate3d(-50%, calc(-50% + var(--hero-offset)), 0);
         }
       }
     </style>
@@ -504,6 +508,7 @@ const GUIDES_URL = LINKS.guides;
         if (Math.abs(targetParallax - currentParallax) < 0.1) currentParallax = targetParallax;
 
         root.style.setProperty('--hero-progress', currentProgress.toFixed(4));
+        root.style.setProperty('--hero-offset', `${(currentProgress * -40).toFixed(2)}px`);
         root.style.setProperty('--scroll-parallax', `${currentParallax.toFixed(2)}px`);
 
         if (currentProgress !== targetProgress || currentParallax !== targetParallax) {

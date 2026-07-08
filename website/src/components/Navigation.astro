@@ -50,7 +50,7 @@ const {
     width: clamp(100px, 12vw, 160px);
     height: auto;
     transform-origin: top left;
-    animation: flagWave 7s ease-in-out infinite;
+    animation: flagWave 7s ease-in-out infinite !important;
   }
 
   .top-left-flag img {
@@ -124,9 +124,4 @@ const {
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .top-left-flag {
-      animation: none;
-    }
-  }
 </style>

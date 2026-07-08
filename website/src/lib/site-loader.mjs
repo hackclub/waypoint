@@ -30,9 +30,14 @@ html[data-site-loading='pending'] body::after {
   aspect-ratio: 1;
   background: url('/star-hero.svg') center / contain no-repeat;
   transform: translate(-50%, -50%);
-  animation:
-    siteHeroStarSpin 1.35s cubic-bezier(0.65, 0, 0.35, 1) infinite,
-    siteHeroStarGlow 2.15s ease-in-out infinite;
+  animation-name: siteHeroStarSpin, siteHeroStarGlow !important;
+  animation-duration: 1.35s, 2.15s !important;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1), ease-in-out !important;
+  animation-iteration-count: infinite, infinite !important;
+  animation-fill-mode: both, both !important;
+  animation-play-state: running, running !important;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
   filter: drop-shadow(0 0 1.2rem rgba(240, 179, 35, 0.35));
   z-index: 9999;
   pointer-events: none;
@@ -58,7 +63,7 @@ html[data-site-loading='pending'] body::after {
   height: 100%;
 }
 
-.site-load-shell[data-site-fill='true'] > :is(img, picture, iframe, video, object, embed, [data-load-watch]) {
+.site-load-shell[data-site-fill='true'] > :is(img, picture, [data-load-watch]) {
   width: 100%;
   height: 100%;
 }
@@ -84,15 +89,20 @@ html[data-site-loading='pending'] body::after {
   aspect-ratio: 1;
   background: url('/star-hero.svg') center / contain no-repeat;
   transform: translate(-50%, -50%);
-  animation:
-    siteHeroStarSpin 1.45s cubic-bezier(0.68, -0.05, 0.32, 1.05) infinite,
-    siteHeroStarGlow 2s ease-in-out infinite;
+  animation-name: siteHeroStarSpin, siteHeroStarGlow !important;
+  animation-duration: 1.45s, 2s !important;
+  animation-timing-function: cubic-bezier(0.68, -0.05, 0.32, 1.05), ease-in-out !important;
+  animation-iteration-count: infinite, infinite !important;
+  animation-fill-mode: both, both !important;
+  animation-play-state: running, running !important;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
   filter: drop-shadow(0 0 0.9rem rgba(240, 179, 35, 0.3));
   z-index: 2;
   pointer-events: none;
 }
 
-.site-load-shell.is-site-loading > :is(img, picture, iframe, video, object, embed, [data-load-watch]) {
+.site-load-shell.is-site-loading > :is(img, picture, [data-load-watch]) {
   opacity: 0;
 }
 
@@ -124,18 +134,12 @@ html[data-site-loading='pending'] body::after {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html[data-site-loading='pending'] body::after,
-  .site-load-shell.is-site-loading::after {
-    animation: siteHeroStarGlow 1.6s ease-in-out infinite;
-  }
-}
 `;
 
 export const SITE_LOADER_SCRIPT = `
 (() => {
   const root = document.documentElement;
-  const selector = 'picture, img, iframe, video, object, embed, [data-load-watch]';
+  const selector = 'picture, img, [data-load-watch]';
   const shellClass = 'site-load-shell';
   const loadingClass = 'is-site-loading';
   const pageLoaderDelayMs = 50;

@@ -1,0 +1,29 @@
+---
+export interface Props {
+  src?: string;
+  title: string;
+  caption?: string;
+}
+
+const { src, title, caption } = Astro.props;
+const videoSrc = src ?? 'https://www.youtube-nocookie.com/embed/LDU_Txk06tM';
+---
+
+<figure class="guide-video">
+  <div class="guide-video__frame">
+    <iframe
+      src={videoSrc}
+      title={title}
+      loading="lazy"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+    />
+  </div>
+  {
+    (caption || Astro.slots.has('default')) && (
+      <figcaption>
+        {caption ? caption : <slot />}
+      </figcaption>
+    )
+  }
+</figure>
