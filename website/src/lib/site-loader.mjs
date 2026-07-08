@@ -28,7 +28,7 @@ html[data-site-loading='pending'] body::after {
   left: 50%;
   width: var(--site-loader-star-size);
   aspect-ratio: 1;
-  background: url('/star-hero.svg') center / contain no-repeat;
+  background: url('/images/waypoint/waypoint-star.png') center / contain no-repeat;
   transform: translate(-50%, -50%);
   animation-name: siteHeroStarSpin, siteHeroStarGlow !important;
   animation-duration: 1.35s, 2.15s !important;
@@ -87,7 +87,7 @@ html[data-site-loading='pending'] body::after {
   left: 50%;
   width: var(--site-loader-asset-size);
   aspect-ratio: 1;
-  background: url('/star-hero.svg') center / contain no-repeat;
+  background: url('/images/waypoint/waypoint-star.png') center / contain no-repeat;
   transform: translate(-50%, -50%);
   animation-name: siteHeroStarSpin, siteHeroStarGlow !important;
   animation-duration: 1.45s, 2s !important;
@@ -192,10 +192,6 @@ export const SITE_LOADER_SCRIPT = `
     shell.className = shellClass;
     shell.dataset.siteLayout = blockLike ? 'block' : 'inline';
 
-    if (el.closest('.hill-image')) {
-      shell.dataset.siteFill = 'true';
-    }
-
     el.before(shell);
     shell.appendChild(el);
     return shell;
@@ -204,6 +200,8 @@ export const SITE_LOADER_SCRIPT = `
   function bindAsset(el) {
     if (!(el instanceof Element) || el.dataset.siteLoaderBound === 'true') return;
     if (el.tagName === 'IMG' && el.closest('picture')) return;
+    if (el.closest('.hero-art')) return;
+    if (el.closest('.scroll-cue')) return;
 
     el.dataset.siteLoaderBound = 'true';
 

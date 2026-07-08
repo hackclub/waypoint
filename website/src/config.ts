@@ -16,5 +16,8 @@ export const LINKS = {
 export const IMAGES = {
   orpheusFlag: '/OrpheusFlag.svg',
   heroPlaceholder: '/placeholder-hero.svg',
-  starHero: '/star-hero.svg',
+  starHero: '/images/waypoint/waypoint-star.png',
+  heroBackground: '/images/waypoint/hero-background.png',
+  heroHeidi: '/images/waypoint/hero-heidi.png',
+  heroRobot: '/images/waypoint/hero-robot.png',
 } as const;

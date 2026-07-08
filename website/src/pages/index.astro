@@ -13,8 +13,8 @@ const GUIDES_URL = LINKS.guides;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href="/star-hero.svg" />
-    <link rel="shortcut icon" href="/star-hero.svg" />
+    <link rel="icon" type="image/png" href={IMAGES.starHero} />
+    <link rel="shortcut icon" href={IMAGES.starHero} />
     <title>Waypoint!</title>
     <meta
       name="description"
@@ -33,7 +33,24 @@ const GUIDES_URL = LINKS.guides;
         --red: #d84b3a;
         --hero-progress: 0;
         --hero-offset: 0px;
-        --scroll-parallax: 0px;
+        --hero-text-parallax: 0px;
+        --hero-art-parallax: 0px;
+        --hero-viewport: 100vh;
+        --hero-overlap: 80vh;
+        --hero-art-top: 0rem;
+        --hero-heidi-x: 11.05%;
+        --hero-heidi-y: 30.97%;
+        --hero-heidi-width: 47.62%;
+        --hero-robot-x: 28.52%;
+        --hero-robot-y: 51.25%;
+        --hero-robot-width: 15.78%;
+      }
+
+      @supports (height: 100svh) {
+        :root {
+          --hero-viewport: 100svh;
+          --hero-overlap: 80svh;
+        }
       }
 
       * {
@@ -42,6 +59,7 @@ const GUIDES_URL = LINKS.guides;
 
       html {
         scroll-behavior: smooth;
+        overscroll-behavior-y: none;
       }
 
       body {
@@ -50,6 +68,7 @@ const GUIDES_URL = LINKS.guides;
         color: var(--ink);
         font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
         overflow-x: hidden;
+        overscroll-behavior-y: none;
       }
 
       a {
@@ -79,13 +98,13 @@ const GUIDES_URL = LINKS.guides;
 
       .hero-section {
         position: relative;
-        height: 180vh;
+        height: calc(var(--hero-viewport) + var(--hero-overlap));
       }
 
       .hero-sticky {
         position: sticky;
         top: 0;
-        height: 100vh;
+        height: var(--hero-viewport);
       }
 
       .hero-inner {
@@ -93,7 +112,7 @@ const GUIDES_URL = LINKS.guides;
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 100vh;
+        min-height: var(--hero-viewport);
         width: 100vw;
       }
 
@@ -101,9 +120,11 @@ const GUIDES_URL = LINKS.guides;
         position: absolute;
         z-index: 4;
         text-align: center;
-        transform: translate3d(0, -120px, 0);
+        transform: translate3d(0, calc(-120px + var(--hero-text-parallax)), 0);
         will-change: transform;
         pointer-events: none;
+        user-select: none;
+        -webkit-user-select: none;
       }
 
       .eyebrow {
@@ -135,28 +156,53 @@ const GUIDES_URL = LINKS.guides;
         align-items: center;
         justify-content: center;
         width: 100vw;
-        height: 100vh;
+        height: var(--hero-viewport);
         overflow: visible;
-        transform: translate3d(-50%, calc(-50% + var(--scroll-parallax) + var(--hero-offset)), 0);
+        transform: translate3d(-50%, calc(-50% + var(--hero-offset)), 0);
         will-change: transform;
       }
 
-      .hill-image {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2rem;
-        color: var(--ink);
+      .hero-art {
+        position: absolute;
+        top: var(--hero-art-top);
+        left: 50%;
+        z-index: 1;
+        width: max(980px, 118vw);
+        aspect-ratio: 16 / 9;
+        transform: translate3d(-50%, var(--hero-art-parallax), 0);
+        will-change: transform;
+        pointer-events: none;
+        user-select: none;
+        -webkit-user-select: none;
       }
 
-      .hill-image img {
+      .hero-art__layer {
+        position: absolute;
+        display: block;
+      }
+
+      .hero-art__layer--background {
+        inset: 0;
+        z-index: 1;
         width: 100%;
         height: 100%;
-        object-fit: cover;
-        display: block;
+        object-fit: contain;
+      }
+
+      .hero-art__layer--heidi {
+        top: var(--hero-heidi-y);
+        left: var(--hero-heidi-x);
+        z-index: 3;
+        width: var(--hero-heidi-width);
+        height: auto;
+      }
+
+      .hero-art__layer--robot {
+        top: var(--hero-robot-y);
+        left: var(--hero-robot-x);
+        z-index: 2;
+        width: var(--hero-robot-width);
+        height: auto;
       }
 
       .hill-star {
@@ -169,6 +215,8 @@ const GUIDES_URL = LINKS.guides;
         animation: starTilt 6s ease-in-out infinite;
         filter: drop-shadow(0 0 0.75rem rgba(240, 179, 35, 0.28));
         pointer-events: none;
+        user-select: none;
+        -webkit-user-select: none;
       }
 
       .hill-star img {
@@ -177,34 +225,75 @@ const GUIDES_URL = LINKS.guides;
         display: block;
       }
 
-      .foreground-hill {
+      .scroll-cue {
         position: absolute;
         left: 50%;
-        bottom: calc(100% + var(--foreground-hill-offset));
-        z-index: -1;
-        display: flex;
-        align-items: flex-end;
-        width: 120vw;
-        min-width: 100%;
-        height: 80vh;
+        bottom: calc(100% + 1.45rem);
+        z-index: 2147483000;
+        width: 58px;
         transform: translateX(-50%);
-        pointer-events: none;
+        filter: drop-shadow(3px 3px 0 rgba(20, 20, 20, 0.55));
+        animation: scrollCueCall 1.05s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
       }
 
-      .foreground-hill svg {
+      .scroll-cue img {
         width: 100%;
         height: auto;
         display: block;
       }
 
+      .scroll-cue:hover {
+        animation-duration: 0.78s;
+      }
+
+      .scroll-cue:focus-visible {
+        outline: 2px solid var(--gold);
+        outline-offset: 0.45rem;
+      }
+
+      .hero-title,
+      .hero-art img,
+      .hill-star img,
+      .scroll-cue img {
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-user-drag: none;
+        pointer-events: none;
+      }
+
+      .foreground-hill {
+        position: absolute;
+        left: 50%;
+        bottom: calc(100% - var(--foreground-cover-height));
+        z-index: -1;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        width: 100vw;
+        min-width: 100%;
+        height: clamp(220px, 34vh, 420px);
+        transform: translateX(-50%);
+        pointer-events: none;
+      }
+
+      .foreground-hill svg {
+        width: auto;
+        min-width: 120vw;
+        height: 100%;
+        display: block;
+        flex: 0 0 auto;
+      }
+
       .content {
-        --foreground-hill-offset: -80px;
         --foreground-cover-height: 20px;
         position: relative;
         isolation: isolate;
         z-index: 11;
-        margin-top: -600px;
-        padding: 0 1.25rem 6rem;
+        margin-top: calc(-1 * var(--hero-overlap));
+        padding: 0 1.25rem 0;
         background: transparent;
         width: 100vw;
         margin-left: calc(-50vw + 50%);
@@ -308,9 +397,43 @@ const GUIDES_URL = LINKS.guides;
         color: color-mix(in srgb, var(--ink) 86%, var(--bg));
       }
 
+      .site-footer {
+        margin-top: 4rem;
+        padding: 1.15rem 0 1.25rem;
+        border-top: 1px solid color-mix(in srgb, var(--ink) 28%, var(--bg));
+        color: color-mix(in srgb, var(--ink) 58%, var(--bg));
+        font-size: 0.82rem;
+        line-height: 1.8;
+        text-align: center;
+      }
+
+      .site-footer strong {
+        color: color-mix(in srgb, var(--gold) 68%, var(--bg));
+        font-weight: 600;
+      }
+
       @keyframes starTilt {
         0%, 100% { transform: rotate(-7deg) translateY(0px); }
         50% { transform: rotate(7deg) translateY(-4px); }
+      }
+
+      @keyframes scrollCueCall {
+        0%,
+        100% {
+          opacity: 0.78;
+          transform: translateX(-50%) translateY(-8px) scale(1);
+        }
+        35% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(12px) scale(1.08, 0.92);
+        }
+        52% {
+          transform: translateX(-50%) translateY(1px) scale(0.96, 1.06);
+        }
+        72% {
+          opacity: 0.92;
+          transform: translateX(-50%) translateY(7px) scale(1.02, 0.98);
+        }
       }
 
       @media (max-width: 720px) {
@@ -321,6 +444,11 @@ const GUIDES_URL = LINKS.guides;
         .hero-figure {
           width: min(560px, 92vw);
           top: 58%;
+        }
+
+        .hero-art {
+          --hero-art-top: 10.5rem;
+          width: max(840px, 150vw);
         }
 
         .hill-star {
@@ -344,6 +472,10 @@ const GUIDES_URL = LINKS.guides;
           animation-duration: 12s;
         }
 
+        .scroll-cue {
+          animation-duration: 2.4s;
+        }
+
         .hero-copy,
         .hero-figure {
           transition: none;
@@ -351,6 +483,10 @@ const GUIDES_URL = LINKS.guides;
 
         .hero-figure {
           transform: translate3d(-50%, calc(-50% + var(--hero-offset)), 0);
+        }
+
+        .hero-art {
+          transform: translate3d(-50%, 0, 0);
         }
       }
     </style>
@@ -367,8 +503,10 @@ const GUIDES_URL = LINKS.guides;
           <div class="hero-sticky">
             <div class="hero-inner">
               <div class="hero-figure" aria-hidden="true">
-                <div class="hill-image">
-                  <!-- <img src={IMAGES.heroPlaceholder} alt="Waypoint hero image placeholder" /> -->
+                <div class="hero-art">
+                  <img class="hero-art__layer hero-art__layer--background" src={IMAGES.heroBackground} alt="" />
+                  <img class="hero-art__layer hero-art__layer--heidi" src={IMAGES.heroHeidi} alt="" />
+                  <img class="hero-art__layer hero-art__layer--robot" src={IMAGES.heroRobot} alt="" />
                 </div>
 
                 <div class="hero-copy">
@@ -378,6 +516,7 @@ const GUIDES_URL = LINKS.guides;
                 <div class="hill-star">
                   <img src={IMAGES.starHero} alt="Waypoint star decoration" />
                 </div>
+
               </div>
             </div>
           </div>
@@ -410,9 +549,13 @@ const GUIDES_URL = LINKS.guides;
           </div>
 
           <div class="content-inner">
-            <div class="divider"></div>
+            <div class="divider" id="steps-route"></div>
 
-            <section class="section" aria-labelledby="steps-title">
+            <a class="scroll-cue" href="#steps-title" aria-label="Scroll to the robot build steps">
+              <img src="/images/waypoint/scroll-arrows.svg" alt="" />
+            </a>
+
+            <section class="section" aria-labelledby="steps-title" tabindex="-1">
               <div class="section-kicker pixel-font">01 02 03</div>
               <h2 id="steps-title" class="section-title pixel-font">Create a ROS2 robot</h2>
 
@@ -475,6 +618,10 @@ const GUIDES_URL = LINKS.guides;
                 </p>
               </div>
             </section>
+
+            <footer class="site-footer">
+              Made by Logan Peterson with <strong>&lt;3</strong>
+            </footer>
           </div>
         </main>
       </div>
@@ -487,8 +634,10 @@ const GUIDES_URL = LINKS.guides;
 
       let targetProgress = 0;
       let currentProgress = 0;
-      let targetParallax = 0;
-      let currentParallax = 0;
+      let targetTextParallax = 0;
+      let currentTextParallax = 0;
+      let targetArtParallax = 0;
+      let currentArtParallax = 0;
       let rafId = 0;
 
       const measureTargets = () => {
@@ -496,22 +645,25 @@ const GUIDES_URL = LINKS.guides;
         const rect = hero.getBoundingClientRect();
         const total = hero.offsetHeight - window.innerHeight;
         targetProgress = Math.max(0, Math.min(1, -rect.top / Math.max(total, 1)));
-        targetParallax = -window.scrollY * 0.35;
+        targetTextParallax = -window.scrollY * 0.12;
+        targetArtParallax = -window.scrollY * 0.045;
       };
 
       const render = () => {
         const easing = prefersReducedMotion ? 1 : 0.14;
         currentProgress += (targetProgress - currentProgress) * easing;
-        currentParallax += (targetParallax - currentParallax) * easing;
+        currentTextParallax += (targetTextParallax - currentTextParallax) * easing;
+        currentArtParallax += (targetArtParallax - currentArtParallax) * easing;
 
         if (Math.abs(targetProgress - currentProgress) < 0.0005) currentProgress = targetProgress;
-        if (Math.abs(targetParallax - currentParallax) < 0.1) currentParallax = targetParallax;
+        if (Math.abs(targetTextParallax - currentTextParallax) < 0.1) currentTextParallax = targetTextParallax;
+        if (Math.abs(targetArtParallax - currentArtParallax) < 0.1) currentArtParallax = targetArtParallax;
 
         root.style.setProperty('--hero-progress', currentProgress.toFixed(4));
         root.style.setProperty('--hero-offset', `${(currentProgress * -40).toFixed(2)}px`);
-        root.style.setProperty('--scroll-parallax', `${currentParallax.toFixed(2)}px`);
-
-        if (currentProgress !== targetProgress || currentParallax !== targetParallax) {
+        root.style.setProperty('--hero-text-parallax', `${currentTextParallax.toFixed(2)}px`);
+        root.style.setProperty('--hero-art-parallax', `${currentArtParallax.toFixed(2)}px`);
+        if (currentProgress !== targetProgress || currentTextParallax !== targetTextParallax || currentArtParallax !== targetArtParallax) {
           rafId = window.requestAnimationFrame(render);
         } else {
           rafId = 0;

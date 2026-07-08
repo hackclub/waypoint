@@ -13,7 +13,7 @@ export default defineConfig({
 		starlight({
 			title: 'Waypoint',
 			description: 'Learn how to design and build your own robot with Waypoint',
-			favicon: '/star-hero.svg',
+			favicon: '/images/waypoint/waypoint-star.png',
 			customCss: ['./src/styles/starlight-overrides.css'],
 			head: [
 				{ tag: 'style', content: SITE_LOADER_CSS },
