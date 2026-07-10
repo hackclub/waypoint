@@ -32,10 +32,10 @@ export default defineConfig({
 				{ label: 'PCB Guide', slug: 'guides/pcb-guide' },
 				{ label: 'Chassis Guide', slug: 'guides/chassis-guide' },
 				{ label: 'ROS2 Package Guide', slug: 'guides/ros2-package-guide' },
-				   {
-					   label: 'Reference',
-					   autogenerate: { directory: 'reference' },
-				   },
+				{
+					label: 'Reference',
+					items: [{ autogenerate: { directory: 'reference' } }],
+				},
 			],
 		}),
 	],
