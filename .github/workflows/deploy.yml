@@ -1,0 +1,27 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: GitHub Pages build skipped
+        run: |
+          echo "GitHub Pages deployment is intentionally disabled."
+          echo "Vercel handles production deployment for this repository."
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: GitHub Pages deploy skipped
+        run: |
+          echo "Nothing to deploy to GitHub Pages."
+          echo "Vercel handles production deployment for this repository."
