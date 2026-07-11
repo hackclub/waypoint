@@ -64,7 +64,18 @@ html[data-site-loading='pending'] body::after {
   height: 100%;
 }
 
-.site-load-shell[data-site-fill='true'] > :is(img, picture, [data-load-watch]) {
+.site-load-shell[data-site-media='true'] {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.site-load-shell[data-site-media='true'] > :is(iframe, video) {
+  width: 100%;
+  height: 100%;
+}
+
+.site-load-shell[data-site-fill='true'] > :is(img, picture, iframe, video, [data-load-watch]) {
   width: 100%;
   height: 100%;
 }
@@ -103,7 +114,7 @@ html[data-site-loading='pending'] body::after {
   pointer-events: none;
 }
 
-.site-load-shell.is-site-loading > :is(img, picture, [data-load-watch]) {
+.site-load-shell.is-site-loading > :is(img, picture, iframe, video, [data-load-watch]) {
   opacity: 0;
 }
 
@@ -140,14 +151,16 @@ html[data-site-loading='pending'] body::after {
 export const SITE_LOADER_SCRIPT = `
 (() => {
   const root = document.documentElement;
-  const selector = 'picture, img, [data-load-watch]';
+  const selector = 'picture, img, iframe, video, [data-load-watch]';
   const shellClass = 'site-load-shell';
   const loadingClass = 'is-site-loading';
   const pageLoaderDelayMs = 50;
-  const pageLoaderMaxMs = 3000;
+  const pageLoaderHoldMs = 100;
   let pageReady = false;
   let pageLoaderTimer = 0;
-  let pageLoaderFallbackTimer = 0;
+  let pageLoaderHoldTimer = 0;
+  let mainReady = false;
+  let holdElapsed = false;
 
   root.dataset.siteLoading = 'idle';
 
@@ -156,9 +169,10 @@ export const SITE_LOADER_SCRIPT = `
     root.dataset.siteLoading = 'pending';
   }, pageLoaderDelayMs);
 
-  pageLoaderFallbackTimer = window.setTimeout(() => {
-    markPageReady();
-  }, pageLoaderMaxMs);
+  pageLoaderHoldTimer = window.setTimeout(() => {
+    holdElapsed = true;
+    releasePageIfReady();
+  }, pageLoaderHoldMs);
 
   function isWatchTarget(el) {
     return el.hasAttribute('data-load-watch');
@@ -185,6 +199,10 @@ export const SITE_LOADER_SCRIPT = `
       return target.readyState >= 2;
     }
 
+    if (target.tagName === 'IFRAME') {
+      return target.dataset.siteLoaded === 'true';
+    }
+
     return target.dataset.siteLoaded === 'true';
   }
 
@@ -194,10 +212,12 @@ export const SITE_LOADER_SCRIPT = `
 
     const shell = document.createElement('span');
     const display = window.getComputedStyle(el).display;
-    const blockLike = ['block', 'flex', 'grid', 'table', 'list-item'].includes(display);
+    const isMedia = el.tagName === 'IFRAME' || el.tagName === 'VIDEO';
+    const blockLike = isMedia || ['block', 'flex', 'grid', 'table', 'list-item'].includes(display);
 
     shell.className = shellClass;
     shell.dataset.siteLayout = blockLike ? 'block' : 'inline';
+    if (isMedia) shell.dataset.siteMedia = 'true';
 
     el.before(shell);
     shell.appendChild(el);
@@ -232,7 +252,10 @@ export const SITE_LOADER_SCRIPT = `
     const eventTarget = target || el;
     const loadEvent = eventTarget.tagName === 'VIDEO' ? 'loadeddata' : 'load';
     eventTarget.addEventListener(loadEvent, done, { once: true });
-    eventTarget.addEventListener('error', done, { once: true });
+    eventTarget.addEventListener('error', () => {
+      el.dataset.siteLoadError = 'true';
+      applyState();
+    }, { once: true });
   }
 
   function scan(rootNode = document) {
@@ -242,24 +265,35 @@ export const SITE_LOADER_SCRIPT = `
   }
 
   function markPageReady() {
+    if (pageReady) return;
     pageReady = true;
     window.clearTimeout(pageLoaderTimer);
-    window.clearTimeout(pageLoaderFallbackTimer);
+    window.clearTimeout(pageLoaderHoldTimer);
     root.dataset.siteLoading = 'ready';
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => scan(), { once: true });
-  } else {
+  function releasePageIfReady() {
+    if (!mainReady || !holdElapsed) return;
+    markPageReady();
+  }
+
+  const revealPage = () => {
     scan();
+    mainReady = true;
+    releasePageIfReady();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', revealPage, { once: true });
+  } else {
+    revealPage();
   }
 
   window.addEventListener('load', () => {
-    markPageReady();
     scan();
   }, { once: true });
 
-  window.addEventListener('pageshow', markPageReady, { once: true });
+  window.addEventListener('pageshow', revealPage, { once: true });
 
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
