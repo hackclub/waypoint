@@ -139,6 +139,7 @@ h6,
 }
 
 .sl-markdown-content a:not(.sl-link-button) {
+  display: inline;
   color: var(--gold);
   text-decoration: underline;
   text-decoration-thickness: 2px;

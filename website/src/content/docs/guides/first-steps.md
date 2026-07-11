@@ -24,4 +24,3 @@ This process is going to be broken down into 3 parts, each explained in further 
 3. Creating a ROS2 Package
 
 ### Other Section?
-

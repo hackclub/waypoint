@@ -6,6 +6,11 @@ import { SITE_LOADER_CSS, SITE_LOADER_SCRIPT } from '../lib/site-loader.mjs';
 import { IMAGES, LINKS } from '../config';
 
 const GUIDES_URL = LINKS.guides;
+const SITE_URL = 'https://waypoint.hackclub.com/';
+const SITE_TITLE = 'Waypoint';
+const SITE_DESCRIPTION =
+  'A Hack Club YSWS where students design a PCB, chassis, and starter ROS2 package, then bring a real robot to life.';
+const SHARE_IMAGE_URL = new URL(IMAGES.starHero, SITE_URL).toString();
 ---
 
 <!DOCTYPE html>
@@ -15,11 +20,22 @@ const GUIDES_URL = LINKS.guides;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" href={IMAGES.starHero} />
     <link rel="shortcut icon" href={IMAGES.starHero} />
+    <link rel="apple-touch-icon" href={IMAGES.starHero} />
+    <link rel="canonical" href={SITE_URL} />
     <title>Waypoint!</title>
-    <meta
-      name="description"
-      content="Waypoint is a program where students design a custom control PCB, robot chassis, and starter ROS2 package, then get the resources to bring that robot to life."
-    />
+    <meta name="description" content={SITE_DESCRIPTION} />
+    <meta name="theme-color" content="#141414" />
+    <meta property="og:site_name" content="Hack Club Waypoint" />
+    <meta property="og:title" content={SITE_TITLE} />
+    <meta property="og:description" content={SITE_DESCRIPTION} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={SITE_URL} />
+    <meta property="og:image" content={SHARE_IMAGE_URL} />
+    <meta property="og:image:alt" content="Waypoint star logo" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={SITE_TITLE} />
+    <meta name="twitter:description" content={SITE_DESCRIPTION} />
+    <meta name="twitter:image" content={SHARE_IMAGE_URL} />
     <style set:html={SITE_LOADER_CSS}></style>
     <script set:html={SITE_LOADER_SCRIPT}></script>
 
@@ -35,6 +51,7 @@ const GUIDES_URL = LINKS.guides;
         --hero-offset: 0px;
         --hero-text-parallax: 0px;
         --hero-art-parallax: 0px;
+        --scroll-cue-opacity: 1;
         --hero-viewport: 100vh;
         --hero-overlap: 80vh;
         --hero-art-top: 0rem;
@@ -59,7 +76,7 @@ const GUIDES_URL = LINKS.guides;
 
       html {
         scroll-behavior: smooth;
-        overscroll-behavior-y: none;
+        overflow-x: hidden;
       }
 
       body {
@@ -68,7 +85,7 @@ const GUIDES_URL = LINKS.guides;
         color: var(--ink);
         font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
         overflow-x: hidden;
-        overscroll-behavior-y: none;
+        overflow-y: auto;
       }
 
       a {
@@ -88,23 +105,32 @@ const GUIDES_URL = LINKS.guides;
       .page {
         position: relative;
         min-height: 100vh;
+        width: 100%;
+        max-width: 100%;
         background: var(--bg);
       }
 
       .shell {
         position: relative;
         z-index: 1;
+        width: 100%;
+        max-width: 100%;
       }
 
       .hero-section {
         position: relative;
         height: calc(var(--hero-viewport) + var(--hero-overlap));
+        width: 100%;
+        max-width: 100%;
       }
 
       .hero-sticky {
         position: sticky;
         top: 0;
         height: var(--hero-viewport);
+        width: 100%;
+        max-width: 100%;
+        overflow: visible;
       }
 
       .hero-inner {
@@ -113,12 +139,16 @@ const GUIDES_URL = LINKS.guides;
         align-items: center;
         justify-content: center;
         min-height: var(--hero-viewport);
-        width: 100vw;
+        width: 100%;
+        max-width: 100%;
+        overflow: visible;
       }
 
       .hero-copy {
         position: absolute;
         z-index: 4;
+        width: min(100%, 920px);
+        padding-inline: clamp(1rem, 5vw, 2rem);
         text-align: center;
         transform: translate3d(0, calc(-120px + var(--hero-text-parallax)), 0);
         will-change: transform;
@@ -136,19 +166,20 @@ const GUIDES_URL = LINKS.guides;
         font-size: clamp(2.4rem, 8vw, 5.6rem);
         line-height: 1.25;
         text-transform: uppercase;
+        overflow-wrap: anywhere;
       }
 
       .hero-subtitle {
         display: block;
         margin: 1.5rem auto 0;
-        max-width: min(760px, calc(100vw - 3rem));
+        max-width: min(760px, calc(100% - 3rem));
         font-size: clamp(0.9rem, 2vw, 1.08rem);
         line-height: 1.9;
         color: color-mix(in srgb, var(--ink) 92%, var(--bg));
       }
 
       .hero-figure {
-        position: fixed;
+        position: absolute;
         left: 50%;
         top: 50%;
         z-index: 2;
@@ -156,10 +187,13 @@ const GUIDES_URL = LINKS.guides;
         align-items: center;
         justify-content: center;
         width: 100vw;
+        width: 100dvw;
+        max-width: 100%;
         height: var(--hero-viewport);
         overflow: visible;
         transform: translate3d(-50%, calc(-50% + var(--hero-offset)), 0);
         will-change: transform;
+        pointer-events: none;
       }
 
       .hero-art {
@@ -231,22 +265,31 @@ const GUIDES_URL = LINKS.guides;
         bottom: calc(100% + 1.45rem);
         z-index: 2147483000;
         width: 58px;
+        opacity: var(--scroll-cue-opacity);
         transform: translateX(-50%);
         filter: drop-shadow(3px 3px 0 rgba(20, 20, 20, 0.55));
-        animation: scrollCueCall 1.05s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
         cursor: pointer;
         user-select: none;
         -webkit-user-select: none;
+        transition:
+          transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
+          opacity 180ms ease,
+          filter 180ms ease;
+        will-change: transform, opacity;
       }
 
       .scroll-cue img {
         width: 100%;
         height: auto;
         display: block;
+        transform-origin: 50% 55%;
+        animation: scrollCueCall 1.28s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+        will-change: transform;
       }
 
       .scroll-cue:hover {
-        animation-duration: 0.78s;
+        transform: translateX(-50%) translateY(-0.35rem);
+        filter: drop-shadow(4px 5px 0 rgba(20, 20, 20, 0.55));
       }
 
       .scroll-cue:focus-visible {
@@ -266,22 +309,22 @@ const GUIDES_URL = LINKS.guides;
 
       .foreground-hill {
         position: absolute;
-        left: 50%;
+        left: 0;
         bottom: calc(100% - var(--foreground-cover-height));
         z-index: -1;
         display: flex;
         align-items: flex-end;
         justify-content: center;
-        width: 100vw;
+        width: 100%;
         min-width: 100%;
         height: clamp(220px, 34vh, 420px);
-        transform: translateX(-50%);
+        overflow: hidden;
         pointer-events: none;
       }
 
       .foreground-hill svg {
         width: auto;
-        min-width: 120vw;
+        min-width: max(720px, 120vw);
         height: 100%;
         display: block;
         flex: 0 0 auto;
@@ -295,8 +338,9 @@ const GUIDES_URL = LINKS.guides;
         margin-top: calc(-1 * var(--hero-overlap));
         padding: 0 1.25rem 0;
         background: transparent;
-        width: 100vw;
-        margin-left: calc(-50vw + 50%);
+        width: 100%;
+        max-width: 100%;
+        pointer-events: auto;
       }
 
       .content::before {
@@ -336,6 +380,7 @@ const GUIDES_URL = LINKS.guides;
         font-size: clamp(1.2rem, 3vw, 1.8rem);
         line-height: 1.9;
         text-transform: uppercase;
+        overflow-wrap: anywhere;
       }
 
       .section-text {
@@ -355,6 +400,11 @@ const GUIDES_URL = LINKS.guides;
         grid-template-columns: 3.4rem 1fr;
         gap: 1rem;
         align-items: start;
+        min-width: 0;
+      }
+
+      .step > div {
+        min-width: 0;
       }
 
       .step-number {
@@ -420,19 +470,26 @@ const GUIDES_URL = LINKS.guides;
       @keyframes scrollCueCall {
         0%,
         100% {
-          opacity: 0.78;
-          transform: translateX(-50%) translateY(-8px) scale(1);
+          transform: translateY(-7px) scale(1);
         }
         35% {
-          opacity: 1;
-          transform: translateX(-50%) translateY(12px) scale(1.08, 0.92);
+          transform: translateY(13px) scale(1.08, 0.92);
         }
         52% {
-          transform: translateX(-50%) translateY(1px) scale(0.96, 1.06);
+          transform: translateY(1px) scale(0.96, 1.06);
         }
         72% {
-          opacity: 0.92;
-          transform: translateX(-50%) translateY(7px) scale(1.02, 0.98);
+          transform: translateY(6px) scale(1.02, 0.98);
+        }
+      }
+
+      @keyframes scrollCueQuiet {
+        0%,
+        100% {
+          transform: translateY(-3px);
+        }
+        50% {
+          transform: translateY(5px);
         }
       }
 
@@ -442,13 +499,19 @@ const GUIDES_URL = LINKS.guides;
         }
 
         .hero-figure {
-          width: min(560px, 92vw);
+          width: 100vw;
+          width: 100dvw;
+          max-width: none;
           top: 58%;
         }
 
         .hero-art {
           --hero-art-top: 10.5rem;
-          width: max(840px, 150vw);
+          width: clamp(760px, 150vw, 940px);
+        }
+
+        .content {
+          padding-inline: clamp(0.9rem, 4vw, 1.1rem);
         }
 
         .hill-star {
@@ -473,7 +536,11 @@ const GUIDES_URL = LINKS.guides;
         }
 
         .scroll-cue {
-          animation-duration: 2.4s;
+          transform: translateX(-50%);
+        }
+
+        .scroll-cue img {
+          animation: scrollCueQuiet 2.1s ease-in-out infinite;
         }
 
         .hero-copy,
@@ -557,7 +624,7 @@ const GUIDES_URL = LINKS.guides;
 
             <section class="section" aria-labelledby="steps-title" tabindex="-1">
               <div class="section-kicker pixel-font">01 02 03</div>
-              <h2 id="steps-title" class="section-title pixel-font">Create a ROS2 robot</h2>
+              <h2 id="steps-title" class="section-title pixel-font" tabindex="-1">Create a ROS2 robot</h2>
 
               
 
@@ -629,6 +696,7 @@ const GUIDES_URL = LINKS.guides;
 
     <script is:inline>
       const hero = document.querySelector('[data-hero]');
+      const scrollCue = document.querySelector('.scroll-cue');
       const root = document.documentElement;
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -638,7 +706,10 @@ const GUIDES_URL = LINKS.guides;
       let currentTextParallax = 0;
       let targetArtParallax = 0;
       let currentArtParallax = 0;
+      let targetScrollCueOpacity = 1;
+      let currentScrollCueOpacity = 1;
       let rafId = 0;
+      let scrollTweenId = 0;
 
       const measureTargets = () => {
         if (!hero) return;
@@ -647,6 +718,7 @@ const GUIDES_URL = LINKS.guides;
         targetProgress = Math.max(0, Math.min(1, -rect.top / Math.max(total, 1)));
         targetTextParallax = -window.scrollY * 0.12;
         targetArtParallax = -window.scrollY * 0.045;
+        targetScrollCueOpacity = Math.max(0, Math.min(1, 1 - targetProgress * 5));
       };
 
       const render = () => {
@@ -654,16 +726,24 @@ const GUIDES_URL = LINKS.guides;
         currentProgress += (targetProgress - currentProgress) * easing;
         currentTextParallax += (targetTextParallax - currentTextParallax) * easing;
         currentArtParallax += (targetArtParallax - currentArtParallax) * easing;
+        currentScrollCueOpacity += (targetScrollCueOpacity - currentScrollCueOpacity) * easing;
 
         if (Math.abs(targetProgress - currentProgress) < 0.0005) currentProgress = targetProgress;
         if (Math.abs(targetTextParallax - currentTextParallax) < 0.1) currentTextParallax = targetTextParallax;
         if (Math.abs(targetArtParallax - currentArtParallax) < 0.1) currentArtParallax = targetArtParallax;
+        if (Math.abs(targetScrollCueOpacity - currentScrollCueOpacity) < 0.01) currentScrollCueOpacity = targetScrollCueOpacity;
 
         root.style.setProperty('--hero-progress', currentProgress.toFixed(4));
         root.style.setProperty('--hero-offset', `${(currentProgress * -40).toFixed(2)}px`);
         root.style.setProperty('--hero-text-parallax', `${currentTextParallax.toFixed(2)}px`);
         root.style.setProperty('--hero-art-parallax', `${currentArtParallax.toFixed(2)}px`);
-        if (currentProgress !== targetProgress || currentTextParallax !== targetTextParallax || currentArtParallax !== targetArtParallax) {
+        root.style.setProperty('--scroll-cue-opacity', currentScrollCueOpacity.toFixed(3));
+        if (
+          currentProgress !== targetProgress ||
+          currentTextParallax !== targetTextParallax ||
+          currentArtParallax !== targetArtParallax ||
+          currentScrollCueOpacity !== targetScrollCueOpacity
+        ) {
           rafId = window.requestAnimationFrame(render);
         } else {
           rafId = 0;
@@ -678,6 +758,69 @@ const GUIDES_URL = LINKS.guides;
       scheduleRender();
       window.addEventListener('scroll', scheduleRender, { passive: true });
       window.addEventListener('resize', scheduleRender);
+
+      const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
+
+      const scrollToElement = (target) => {
+        if (scrollTweenId) window.cancelAnimationFrame(scrollTweenId);
+
+        const scroller = document.scrollingElement || document.documentElement;
+        const start = scroller.scrollTop;
+        const maxScroll = scroller.scrollHeight - window.innerHeight;
+        const targetTop = Math.max(0, Math.min(maxScroll, target.getBoundingClientRect().top + window.scrollY));
+        const distance = targetTop - start;
+        const duration = prefersReducedMotion ? 420 : 1000;
+        const startTime = performance.now();
+
+        if (duration === 0 || Math.abs(distance) < 2) {
+          scroller.scrollTop = targetTop;
+          if (target instanceof HTMLElement) target.focus({ preventScroll: true });
+          return;
+        }
+
+        const step = (time) => {
+          const progress = Math.min(1, (time - startTime) / duration);
+          scroller.scrollTop = start + distance * easeOutCubic(progress);
+
+          if (progress < 1) {
+            scrollTweenId = window.requestAnimationFrame(step);
+            return;
+          }
+
+          scrollTweenId = 0;
+          if (target instanceof HTMLElement) target.focus({ preventScroll: true });
+          if (window.history?.replaceState && target.id) {
+            window.history.replaceState(null, '', `#${target.id}`);
+          }
+        };
+
+        scrollTweenId = window.requestAnimationFrame(step);
+      };
+
+      const cancelScrollTween = () => {
+        if (!scrollTweenId) return;
+        window.cancelAnimationFrame(scrollTweenId);
+        scrollTweenId = 0;
+      };
+
+      scrollCue?.addEventListener('click', (event) => {
+        const targetId = scrollCue.getAttribute('href');
+        if (!targetId || !targetId.startsWith('#')) return;
+
+        const target = document.querySelector(targetId);
+        if (!target) return;
+
+        event.preventDefault();
+        scrollToElement(target);
+      });
+
+      window.addEventListener('wheel', cancelScrollTween, { passive: true });
+      window.addEventListener('touchstart', cancelScrollTween, { passive: true });
+      window.addEventListener('keydown', (event) => {
+        if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) {
+          cancelScrollTween();
+        }
+      });
     </script>
   </body>
 </html>

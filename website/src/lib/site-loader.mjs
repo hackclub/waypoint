@@ -8,7 +8,7 @@ export const SITE_LOADER_CSS = `
 }
 
 html[data-site-loading='pending'] body {
-  overflow: hidden;
+  overflow-y: auto !important;
 }
 
 html[data-site-loading='pending'] body::before {
@@ -19,6 +19,7 @@ html[data-site-loading='pending'] body::before {
     radial-gradient(circle at center, rgba(240, 179, 35, 0.1), transparent 30%),
     linear-gradient(rgba(20, 20, 20, 0.96), rgba(20, 20, 20, 0.985));
   z-index: 9998;
+  pointer-events: none;
 }
 
 html[data-site-loading='pending'] body::after {
@@ -143,8 +144,10 @@ export const SITE_LOADER_SCRIPT = `
   const shellClass = 'site-load-shell';
   const loadingClass = 'is-site-loading';
   const pageLoaderDelayMs = 50;
+  const pageLoaderMaxMs = 3000;
   let pageReady = false;
   let pageLoaderTimer = 0;
+  let pageLoaderFallbackTimer = 0;
 
   root.dataset.siteLoading = 'idle';
 
@@ -152,6 +155,10 @@ export const SITE_LOADER_SCRIPT = `
     if (pageReady) return;
     root.dataset.siteLoading = 'pending';
   }, pageLoaderDelayMs);
+
+  pageLoaderFallbackTimer = window.setTimeout(() => {
+    markPageReady();
+  }, pageLoaderMaxMs);
 
   function isWatchTarget(el) {
     return el.hasAttribute('data-load-watch');
@@ -237,6 +244,7 @@ export const SITE_LOADER_SCRIPT = `
   function markPageReady() {
     pageReady = true;
     window.clearTimeout(pageLoaderTimer);
+    window.clearTimeout(pageLoaderFallbackTimer);
     root.dataset.siteLoading = 'ready';
   }
 

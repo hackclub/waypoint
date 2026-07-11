@@ -24,6 +24,7 @@ const {
     align-items: center;
     justify-content: center;
     gap: 0.8rem;
+    max-width: 100%;
     padding: 1rem 1.25rem;
     border: 2px solid var(--ink);
     background: var(--gold);
@@ -36,6 +37,9 @@ const {
     text-transform: uppercase;
     cursor: pointer;
     text-decoration: none;
+    text-align: center;
+    line-height: 1.7;
+    white-space: normal;
   }
 
   .waypoint-button:hover {
@@ -51,5 +55,28 @@ const {
 
   .waypoint-button.secondary:hover {
     box-shadow: 8px 8px 0 var(--gold);
+  }
+
+  @media (max-width: 420px) {
+    .waypoint-button {
+      gap: 0.6rem;
+      width: 100%;
+      padding: 0.82rem 0.85rem;
+      box-shadow: 4px 4px 0 var(--red);
+      font-size: clamp(0.52rem, 2.55vw, 0.62rem);
+      letter-spacing: 0.04em;
+    }
+
+    .waypoint-button:hover {
+      box-shadow: 5px 5px 0 var(--red);
+    }
+
+    .waypoint-button.secondary {
+      box-shadow: 4px 4px 0 var(--gold);
+    }
+
+    .waypoint-button.secondary:hover {
+      box-shadow: 5px 5px 0 var(--gold);
+    }
   }
 </style>
