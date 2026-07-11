@@ -8,7 +8,7 @@ export const COLORS = {
 } as const;
 
 export const LINKS = {
-  repo: 'https://github.com/sharkingstudios/waypoint',
+  repo: 'https://github.com/hackclub/waypoint',
   guides: '/guides/first-steps',
   hackClub: 'https://hackclub.com',
 } as const;

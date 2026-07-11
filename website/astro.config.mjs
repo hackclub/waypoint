@@ -25,7 +25,7 @@ export default defineConfig({
 			},
 			pagefind: false,
 			social: [
-				{ icon: 'github', label: 'GitHub', href: 'https://github.com/sharkingstudios/waypoint' },
+				{ icon: 'github', label: 'GitHub', href: 'https://github.com/hackclub/waypoint' },
 			],
 			sidebar: [
 				{ label: 'First Steps', slug: 'guides/first-steps' },
