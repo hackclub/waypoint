@@ -1,0 +1,157 @@
+(footprint "KFC7x7_Latching_DPDT_Blue"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "KFC7x7 / XKB7070 style 7x7 mm DPDT latching pushbutton, 6-pin THT, blue stem; nominal drawing: 2 mm column pitch, 5 mm row spacing, 1.0 mm recommended holes")
+	(tags "KFC7x7 latching self-locking DPDT pushbutton blue THT")
+	(property "Reference" "SW"
+		(at 0 0 0)
+		(layer "F.SilkS")
+		(uuid "cd1e3000-8085-4c29-9001-15461c970d56")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "KFC7x7_Latching_DPDT_Blue"
+		(at 0 5 0)
+		(layer "F.Fab")
+		(uuid "701b722f-dc37-4179-8e47-355b92694955")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "56daaa34-32ff-40b3-916c-e096e4869088")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "9824e4e4-c10a-4a73-b9e7-ce115499f6c5")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(attr through_hole)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -3.5 -2.5)
+		(end -2.5 -3.5)
+		(stroke
+			(width 0.25)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "ddf44e2c-7742-43f7-9766-7a82148067dd")
+	)
+	(fp_rect
+		(start -3.5 -3.5)
+		(end 3.5 3.5)
+		(stroke
+			(width 0.25)
+			(type default)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "6eef6d35-bf65-44f9-bad2-196acdccdc6b")
+	)
+	(fp_rect
+		(start -3.75 -3.75)
+		(end 3.75 3.75)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "33f98f26-d8b0-4e84-be09-6bdf9bf718b8")
+	)
+	(fp_rect
+		(start -3.5 -3.5)
+		(end 3.5 3.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "3cf3e829-30bb-4de4-b160-edf4acd25983")
+	)
+	(pad "1" thru_hole rect
+		(at -2 -2.5)
+		(size 1.8 1.8)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "3b829307-68b5-44b4-adfc-8bc0416fadde")
+	)
+	(pad "2" thru_hole circle
+		(at 0 -2.5)
+		(size 1.8 1.8)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "744607da-42fc-4134-9bb2-e1c28e54d6f9")
+	)
+	(pad "3" thru_hole circle
+		(at 2 -2.5)
+		(size 1.8 1.8)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "38d0403d-7b17-4f9d-9113-e8e3770f4f7e")
+	)
+	(pad "4" thru_hole circle
+		(at -2 2.5)
+		(size 1.8 1.8)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "7cc6668a-a0c4-4677-b15b-cf86c87d0a46")
+	)
+	(pad "5" thru_hole circle
+		(at 0 2.5)
+		(size 1.8 1.8)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "95389886-6b24-4db0-b22b-3cf9e555352c")
+	)
+	(pad "6" thru_hole circle
+		(at 2 2.5)
+		(size 1.8 1.8)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "eb206ca7-ec23-4ad2-bad8-6463b84ab12c")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/libraries/WaypointCarePackage.pretty/KFC7x7_Blue.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

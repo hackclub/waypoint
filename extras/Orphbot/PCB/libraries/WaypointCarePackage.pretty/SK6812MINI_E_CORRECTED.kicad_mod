@@ -1,0 +1,331 @@
+(footprint "SK6812MINI_E_CORRECTED"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Add-on for regular MX-footprints with SK6812 MINI-E")
+	(tags "cherry MX SK6812 Mini-E rearmount rear mount led rgb backlight")
+	(property "Reference" "D92"
+		(at -7.2 7.15 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "9b2854fd-2e98-4875-ad18-0da42de6fc7c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "SK6812MINI_E"
+		(at 0 2.5 0)
+		(layer "F.Fab")
+		(uuid "4023ff02-1af4-4585-9eb8-e63ce1ad3379")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "https://cdn-shop.adafruit.com/product-files/2686/SK6812MINI_REV.01-1-2.pdf"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "6de026e0-0b4c-4f7d-b977-0068cedd8b78")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" "RGB LED with integrated controller"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "0089db7b-1eeb-4b1b-ac46-cb1a3d46c181")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_poly
+		(pts
+			(xy -4.199999 -0.999999) (xy -3.299999 -1.899999) (xy -4.199999 -1.899999)
+		)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill yes)
+		(layer "B.SilkS")
+		(uuid "0c0b1a93-f446-4a8e-be73-e4cd4e708c29")
+	)
+	(fp_line
+		(start -1.599999 -0.899999)
+		(end -1.599999 1.400001)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "Dwgs.User")
+		(uuid "3fbfe0cc-7598-4382-a09f-f609993a6ef7")
+	)
+	(fp_line
+		(start -1.599999 -0.899999)
+		(end -1.099999 -1.399999)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "Dwgs.User")
+		(uuid "6ac600de-3a03-4b1b-97c4-b5ac44254a32")
+	)
+	(fp_line
+		(start -1.599999 1.400001)
+		(end 1.600001 1.400001)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "Dwgs.User")
+		(uuid "e099ed42-b8b5-473f-af98-e3ef34ab2f4f")
+	)
+	(fp_line
+		(start 1.600001 -1.399999)
+		(end -1.099999 -1.399999)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "Dwgs.User")
+		(uuid "60b10e56-e54f-410b-a346-cf8943a0dc7a")
+	)
+	(fp_line
+		(start 1.600001 1.400001)
+		(end 1.600001 -1.399999)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "Dwgs.User")
+		(uuid "201045f0-d79f-4e73-9aae-98d0347e7008")
+	)
+	(fp_line
+		(start -1.699998 0.702843)
+		(end -1.699998 -0.702841)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "e12de6a0-92d2-4225-ac4b-5cf129748f91")
+	)
+	(fp_line
+		(start -0.794451 -1.499999)
+		(end 0.794453 -1.499999)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "96238416-90e6-40ef-b59e-a5ce23b0bac0")
+	)
+	(fp_line
+		(start 0.794453 1.5)
+		(end -0.794452 1.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "0d7eb824-3393-4841-86b8-35f1fea4bfe9")
+	)
+	(fp_line
+		(start 1.7 -0.702841)
+		(end 1.7 0.702843)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "96d394ea-4044-49f0-a754-8e621d49583d")
+	)
+	(fp_arc
+		(start -1.749483 -0.919719)
+		(mid -1.712526 -0.814067)
+		(end -1.699998 -0.702841)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "175bae7b-0eec-49db-8440-bc4e533a5636")
+	)
+	(fp_arc
+		(start -1.749483 -0.919718)
+		(mid -1.638071 -1.504034)
+		(end -1.04671 -1.568298)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "b6724f80-401a-4e8f-b365-5ccbba45ca09")
+	)
+	(fp_arc
+		(start -1.699998 0.702844)
+		(mid -1.712526 0.814069)
+		(end -1.749483 0.919721)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "747d21ac-be0f-4d00-aedd-0a1c937a8441")
+	)
+	(fp_arc
+		(start -1.04671 1.568299)
+		(mid -1.63807 1.504035)
+		(end -1.749483 0.919721)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "a2d9e399-2c92-4b6f-9622-ef70c90c0d62")
+	)
+	(fp_arc
+		(start -1.04671 1.568299)
+		(mid -0.925122 1.517377)
+		(end -0.794452 1.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "73a496c8-c9dd-4d00-8cf9-fca03457ec66")
+	)
+	(fp_arc
+		(start -0.794451 -1.499999)
+		(mid -0.925122 -1.517376)
+		(end -1.04671 -1.568298)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "22ec005e-dc62-4ef1-b2ac-3253a9124634")
+	)
+	(fp_arc
+		(start 0.794454 1.500001)
+		(mid 0.925124 1.517378)
+		(end 1.046712 1.5683)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "aaf531e5-93b9-415f-9db1-81af16753888")
+	)
+	(fp_arc
+		(start 1.046711 -1.568298)
+		(mid 0.925123 -1.517376)
+		(end 0.794453 -1.499999)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "bd8ffb14-3fe8-47a9-8b7e-5792598d842b")
+	)
+	(fp_arc
+		(start 1.046712 -1.568296)
+		(mid 1.638071 -1.504033)
+		(end 1.749485 -0.919719)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "007a029f-ff42-48ba-80b4-afa098479958")
+	)
+	(fp_arc
+		(start 1.7 -0.702842)
+		(mid 1.712528 -0.814067)
+		(end 1.749485 -0.919719)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "b7131f44-00c3-4607-b427-9cbe3a148c16")
+	)
+	(fp_arc
+		(start 1.749485 0.919721)
+		(mid 1.638072 1.504036)
+		(end 1.046712 1.5683)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "31cded6f-774a-4512-baf4-67171f4880da")
+	)
+	(fp_arc
+		(start 1.749485 0.919721)
+		(mid 1.712528 0.814069)
+		(end 1.7 0.702843)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "Edge.Cuts")
+		(uuid "48354113-19f9-4c4c-a737-a7e7c0c4f42e")
+	)
+	(pad "1" smd roundrect
+		(at 2.600001 0.750001 90)
+		(size 0.82 1.6)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.1)
+		(uuid "c576989e-9fcb-401d-aeb4-e5db4463f755")
+	)
+	(pad "2" smd roundrect
+		(at 2.600001 -0.749999 90)
+		(size 0.82 1.6)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.1)
+		(uuid "0d18be9a-85f5-4493-aabc-c85c627da775")
+	)
+	(pad "3" smd roundrect
+		(at -2.599999 -0.749999 90)
+		(size 0.82 1.6)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.1)
+		(uuid "cd48a797-d7ce-4625-8382-cc4cd61aada2")
+	)
+	(pad "4" smd roundrect
+		(at -2.599999 0.750001 90)
+		(size 0.82 1.6)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.1)
+		(uuid "8fb882af-c65b-4c29-bea6-76505c2dd02d")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/libraries/WaypointCarePackage.pretty/LED-SMD_L3.2-W2.8-LS5.9_SK6812MINI-E.step"
+		(offset
+			(xyz 0 0 -1.8)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -180 -0 -0)
+		)
+	)
+)
