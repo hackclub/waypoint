@@ -1,0 +1,4 @@
+(sym_lib_table
+	(version 7)
+	(lib (name "WaypointCarePackage") (type "KiCad") (uri "${KIPRJMOD}/libraries/WaypointCarePackage.kicad_sym") (options "") (descr ""))
+)

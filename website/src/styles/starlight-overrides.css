@@ -163,6 +163,21 @@ h6,
   position: relative;
   isolation: isolate;
   margin: 1.6rem 0;
+  --ec-brdCol: rgba(242, 229, 183, 0.42);
+  --ec-codeBg: #0b0d0f;
+  --ec-codeFg: #f8edc8;
+  --ec-codeSelBg: rgba(240, 179, 35, 0.28);
+  --ec-gtrFg: #b8aa76;
+  --ec-gtrHlFg: #f8edc8;
+  --ec-gtrBrdCol: rgba(242, 229, 183, 0.18);
+  --ec-frames-editorBg: #0b0d0f;
+  --ec-frames-terminalBg: #0b0d0f;
+  --ec-frames-editorActTabBg: #f2e5b7;
+  --ec-frames-editorActTabFg: #141414;
+  --ec-frames-editorTabBarBg: #141414;
+  --ec-frames-terminalTitlebarBg: #f2e5b7;
+  --ec-frames-terminalTitlebarFg: #141414;
+  --ec-frames-terminalTitlebarBrdBtmCol: rgba(242, 229, 183, 0.5);
 }
 
 .sl-markdown-content .expressive-code::before {
@@ -315,6 +330,20 @@ h6,
   font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace !important;
   font-size: 0.92rem;
   line-height: 1.8;
+}
+
+.sl-markdown-content .expressive-code .ec-line :where(span[style^='--']:not([class])) {
+  color: var(--0, var(--ec-codeFg)) !important;
+  background-color: var(--0bg, transparent) !important;
+  font-style: var(--0fs, inherit) !important;
+  font-weight: var(--0fw, inherit) !important;
+  text-decoration: var(--0td, inherit) !important;
+}
+
+.astro-code,
+.astro-code span {
+  color: var(--shiki-dark, var(--ink)) !important;
+  background-color: var(--shiki-dark-bg, #0b0d0f) !important;
 }
 
 .sl-markdown-content blockquote {

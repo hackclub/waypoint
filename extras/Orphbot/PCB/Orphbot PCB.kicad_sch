@@ -1,0 +1,20 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "131471ea-ff09-449d-948e-8bb493b6ad45")
+	(paper "A4")
+	(title_block
+		(title "Orphbot PCB")
+		(date "2026-07-12")
+		(rev "1")
+		(company "Logan Peterson")
+	)
+	(lib_symbols)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)
