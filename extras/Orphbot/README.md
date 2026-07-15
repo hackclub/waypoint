@@ -25,7 +25,11 @@ It has 3 separate 3D printed parts. The main body, as well as 2 side parts to be
 
 Heres what the PCB looks like! It was made in KiCAD.
 
-(Again, picture goes here whenever I finish)
+![OrphBot Side View](./PCB/renders/Orphbot%20PCB%20Side.png)
+![OrphBot Side View](./PCB/renders/Orphbot%20PCB%20Top.png)
+![OrphBot Side View](./PCB/renders/Orphbot%20PCB%20Bottom.png)
+![OrphBot Side View](./PCB/renders/PCB.png)
+![OrphBot Side View](./PCB/renders/Schematic.png)
 
 ## Firmware:
 
