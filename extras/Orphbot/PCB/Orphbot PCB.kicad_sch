@@ -4115,6 +4115,12 @@
 		(uuid "a06190cd-da64-4d93-8cde-7bcfbe4c10d2")
 	)
 	(junction
+		(at 160.02 167.64)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "ab8a7735-6f0c-4cfc-94ec-c62da19536b3")
+	)
+	(junction
 		(at 114.3 49.53)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -4389,6 +4395,16 @@
 			(type default)
 		)
 		(uuid "3042a81b-4c6c-4a2a-a080-5c4be09a4ab5")
+	)
+	(wire
+		(pts
+			(xy 160.02 180.34) (xy 160.02 167.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3d6a1b11-4688-40f5-9a17-3001e18fdbac")
 	)
 	(wire
 		(pts
@@ -4982,6 +4998,16 @@
 	)
 	(wire
 		(pts
+			(xy 149.86 182.88) (xy 167.64 182.88)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9e0fd32c-9106-4d04-af67-cb69a33d05e0")
+	)
+	(wire
+		(pts
 			(xy 173.99 109.22) (xy 195.58 109.22)
 		)
 		(stroke
@@ -5069,6 +5095,16 @@
 			(type default)
 		)
 		(uuid "ad9d12ef-3056-4159-8291-2a10dc380b70")
+	)
+	(wire
+		(pts
+			(xy 149.86 180.34) (xy 160.02 180.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b121c8fc-1574-4ccf-bd82-2d51c617cfcc")
 	)
 	(wire
 		(pts
@@ -5272,6 +5308,16 @@
 	)
 	(wire
 		(pts
+			(xy 160.02 167.64) (xy 149.86 167.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e33f510c-40cc-4050-b946-300896b91746")
+	)
+	(wire
+		(pts
 			(xy 106.68 49.53) (xy 107.95 49.53)
 		)
 		(stroke
@@ -5322,7 +5368,7 @@
 	)
 	(wire
 		(pts
-			(xy 163.83 167.64) (xy 149.86 167.64)
+			(xy 163.83 167.64) (xy 160.02 167.64)
 		)
 		(stroke
 			(width 0)
@@ -5489,16 +5535,6 @@
 			(justify left bottom)
 		)
 		(uuid "5ad2c083-c87e-4f3e-9cff-a59a53af0936")
-	)
-	(label "GPIO8"
-		(at 149.86 182.88 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "5decaef6-87ee-4065-902c-c5203a522725")
 	)
 	(label "SCL"
 		(at 31.75 148.59 180)
@@ -5709,16 +5745,6 @@
 			(justify right bottom)
 		)
 		(uuid "d63e58c8-28db-414a-92d8-51ecd132506d")
-	)
-	(label "GPIO7"
-		(at 149.86 180.34 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "d9199cbf-d8ca-4a81-8e93-50ce9fa736d6")
 	)
 	(label "GPIO15"
 		(at 170.18 46.99 180)
@@ -6536,6 +6562,84 @@
 			(project "Orphbot PCB"
 				(path "/131471ea-ff09-449d-948e-8bb493b6ad45"
 					(reference "J3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
+		(at 167.64 182.88 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "33e378b5-4625-4bbd-bd86-579f1aa5fd6b")
+		(property "Reference" "#PWR029"
+			(at 167.64 186.69 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+5V"
+			(at 167.64 177.8 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 167.64 182.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 167.64 182.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 167.64 182.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "acecdadf-e1b1-4877-a628-7ca130bdd825")
+		)
+		(instances
+			(project "Orphbot PCB"
+				(path "/131471ea-ff09-449d-948e-8bb493b6ad45"
+					(reference "#PWR029")
 					(unit 1)
 				)
 			)
