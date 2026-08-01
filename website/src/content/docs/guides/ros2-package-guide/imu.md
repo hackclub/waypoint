@@ -5,7 +5,7 @@ description: Add the required MPU6050 IMU node to your Waypoint package.
 
 Every Waypoint robot includes an IMU. Add a node that reads the physical MPU6050 over I2C and publishes `sensor_msgs/msg/Imu` on `imu/data_raw`. In CLI tools you will usually see that resolved as `/imu/data_raw`.
 
-## Read the `Imu` Message
+## Read the Imu Message
 
 Open the official [`Imu` message definition](https://docs.ros.org/en/jazzy/p/sensor_msgs/msg/Imu.html). Locate the header, orientation, angular velocity, linear acceleration, and three covariance arrays. Pay attention to the units and the rule for marking an estimate unavailable.
 
@@ -56,6 +56,8 @@ Node(
 
 The MPU6050 stores each axis as two bytes: a high byte and a low byte. Combine them into one 16-bit number, then convert from unsigned to signed two's-complement form.
 
+This helper belongs inside `MPU6050Node` at the same indentation level as `publish_sample()`.
+
 ```python title="Signed 16-bit register read"
 def read_word_signed(self, register: int) -> int:
     high = self.bus.read_byte_data(self.address, register)
@@ -68,33 +70,33 @@ def read_word_signed(self, register: int) -> int:
 
 `high << 8` shifts the high byte into the upper half of the 16-bit value. `| low` fills in the lower byte. The `0x8000` check turns values such as `0xfff0` into negative numbers.
 
-OrphBot's `mpu6050_node.py` is useful for studying signed register reads and clear I2C startup errors. Its axis assumptions and bias values are not automatically yours.
+OrphBot's `mpu6050_node.py` provides an implementation for signed register reads and clear I2C startup errors. Its axis assumptions and bias values will not automatically work for your robot though.
 
 ## Use Scale Constants
 
-The common default MPU6050 ranges are:
+This implementation assumes the MPU6050 has powered up or reset with its default range selections:
 
 | Sensor range | Raw counts per unit |
 | --- | --- |
 | accelerometer +/-2 g | `16384` counts per g |
 | gyro +/-250 deg/s | `131` counts per deg/s |
 
-Use the values that match the ranges you configure. If you change MPU6050 range registers later, update the scale constants too.
+Writing `0x00` to `PWR_MGMT_1` wakes the sensor. It does not change those range selections. The constants below match the reset defaults; if you change the range registers later, update the scale constants too.
 
 ```python title="Scale conversion"
 G_TO_MPS2 = 9.80665
+ACCEL_SCALE_COUNTS_PER_G = 16384.0
+GYRO_SCALE_COUNTS_PER_DEG_S = 131.0
 
-accel_x_mps2 = self.read_word_signed(0x3B) / 16384.0 * G_TO_MPS2
-gyro_x_rad_s = math.radians(self.read_word_signed(0x43) / 131.0)
+accel_x_mps2 = self.read_word_signed(0x3B) / ACCEL_SCALE_COUNTS_PER_G * G_TO_MPS2
+gyro_x_rad_s = math.radians(self.read_word_signed(0x43) / GYRO_SCALE_COUNTS_PER_DEG_S)
 ```
 
 Acceleration uses meters per second squared. Gyro uses radians per second. `math.radians()` converts degrees to radians.
 
-## Measure Gyro Bias
+## Keep Bias Optional
 
-A real gyro usually reports a tiny turn rate even when the robot is still. Measure that bias with the robot stationary and subtract it.
-
-Add parameters:
+A real gyro usually reports a tiny turn rate even when the robot is still. Keep the bias parameters in your config, but leave them at zero unless you choose to tune them later.
 
 ```yaml title="config/robot.yaml excerpt"
 imu_node:
@@ -108,7 +110,7 @@ imu_node:
     gyro_bias_z_rad_s: 0.0
 ```
 
-During bringup, echo `/imu/data_raw` while the robot is still, average the gyro values for a few seconds, and put those averages into the bias parameters. You do not need full sensor fusion for this project.
+The three gyro bias parameters may stay at `0.0` for your submission. If you want steadier stationary gyro readings, follow the optional [gyro bias calibration extra](/extras/gyro-bias-calibration/) after bringup works.
 
 ## Build the Node
 
@@ -117,6 +119,28 @@ Create `cool_rover/cool_rover/imu_node.py` and add an executable entry:
 ```python title="setup.py excerpt"
 'imu_node = cool_rover.imu_node:main',
 ```
+
+Start the file with the imports and compact node wrapper used by the snippets below:
+
+```python title="imu_node.py outer scaffold"
+import math
+
+from sensor_msgs.msg import Imu
+import rclpy
+from rclpy.node import Node
+
+
+class MPU6050Node(Node):
+    def __init__(self):
+        super().__init__('imu_node')
+        self.bus = None
+
+        # Declare and read parameters.
+        # Open and initialize I2C.
+        # Create the publisher and timer.
+```
+
+The parameter, bus, publisher, and timer snippets below all belong inside `__init__`. The helper methods and `publish_sample()` belong inside `MPU6050Node` at the same indentation level as `__init__`.
 
 The node structure should follow this sequence:
 
@@ -132,10 +156,69 @@ Useful constants:
 
 ```python title="MPU6050 constants"
 ACCEL_XOUT_H = 0x3B
+ACCEL_YOUT_H = 0x3D
+ACCEL_ZOUT_H = 0x3F
 GYRO_XOUT_H = 0x43
+GYRO_YOUT_H = 0x45
+GYRO_ZOUT_H = 0x47
 PWR_MGMT_1 = 0x6B
 WHO_AM_I = 0x75
+ACCEL_SCALE_COUNTS_PER_G = 16384.0
+GYRO_SCALE_COUNTS_PER_DEG_S = 131.0
 G_TO_MPS2 = 9.80665
+```
+
+Declare and read parameters inside `__init__`:
+
+```python title="IMU parameters"
+self.declare_parameter('bus', 1)
+self.declare_parameter('address', 0x68)
+self.declare_parameter('frame_id', 'imu_link')
+self.declare_parameter('publish_rate_hz', 20.0)
+self.declare_parameter('gyro_bias_x_rad_s', 0.0)
+self.declare_parameter('gyro_bias_y_rad_s', 0.0)
+self.declare_parameter('gyro_bias_z_rad_s', 0.0)
+
+self.bus_number = self.read_nonnegative_int('bus')
+self.address = self.read_i2c_address('address')
+self.frame_id = str(self.get_parameter('frame_id').value)
+self.publish_rate_hz = self.read_positive_float('publish_rate_hz')
+self.gyro_bias_x_rad_s = self.read_finite_float('gyro_bias_x_rad_s')
+self.gyro_bias_y_rad_s = self.read_finite_float('gyro_bias_y_rad_s')
+self.gyro_bias_z_rad_s = self.read_finite_float('gyro_bias_z_rad_s')
+```
+
+Add the validation helpers inside `MPU6050Node`:
+
+```python title="IMU parameter validation helpers"
+def read_nonnegative_int(self, name: str) -> int:
+    raw_value = self.get_parameter(name).value
+    value = int(raw_value)
+    if value != raw_value or value < 0:
+        raise ValueError(f'{name} must be a nonnegative integer')
+    return value
+
+
+def read_i2c_address(self, name: str) -> int:
+    raw_value = self.get_parameter(name).value
+    value = int(raw_value)
+    if value != raw_value or value < 0x08 or value > 0x77:
+        raise ValueError(f'{name} must be a valid 7-bit I2C address')
+    return value
+
+
+def read_positive_float(self, name: str) -> float:
+    value = float(self.get_parameter(name).value)
+    if not math.isfinite(value) or value <= 0.0:
+        raise ValueError(f'{name} must be a positive finite number')
+    return value
+
+
+def read_finite_float(self, name: str) -> float:
+    value = float(self.get_parameter(name).value)
+    if not math.isfinite(value):
+        raise ValueError(f'{name} must be finite')
+    return value
 ```
 
 Opening the bus should produce beginner-readable errors:
@@ -167,32 +250,78 @@ def initialize_sensor(self) -> None:
     self.bus.write_byte_data(self.address, PWR_MGMT_1, 0x00)
 ```
 
+After those methods, wire the bus and ROS publisher/timer together inside `__init__`, after parameter reading:
+
+```python title="IMU __init__ hardware and ROS setup"
+self.bus = self.open_bus()
+self.initialize_sensor()
+
+self.publisher = self.create_publisher(
+    Imu,
+    'imu/data_raw',
+    10,
+)
+self.last_error_log_time = None
+self.timer = self.create_timer(
+    1.0 / self.publish_rate_hz,
+    self.publish_sample,
+)
+```
+
 ## Populate the Message
 
-Set a valid orientation object, then mark orientation unavailable:
+The timer callback reads all six axes before it builds a message. If one I2C read fails, log at a controlled rate and return without publishing a half-filled sample.
 
-```python title="Populate Imu message"
-message = Imu()
-message.header.stamp = self.get_clock().now().to_msg()
-message.header.frame_id = self.frame_id
+```python title="Read and publish one IMU sample"
+def publish_sample(self) -> None:
+    now = self.get_clock().now()
 
-message.orientation.w = 1.0
-message.orientation_covariance[0] = -1.0
+    try:
+        accel_x_mps2 = self.read_word_signed(ACCEL_XOUT_H) / ACCEL_SCALE_COUNTS_PER_G * G_TO_MPS2
+        accel_y_mps2 = self.read_word_signed(ACCEL_YOUT_H) / ACCEL_SCALE_COUNTS_PER_G * G_TO_MPS2
+        accel_z_mps2 = self.read_word_signed(ACCEL_ZOUT_H) / ACCEL_SCALE_COUNTS_PER_G * G_TO_MPS2
 
-message.linear_acceleration.x = accel_x_mps2
-message.linear_acceleration.y = accel_y_mps2
-message.linear_acceleration.z = accel_z_mps2
-message.angular_velocity.x = gyro_x_rad_s - self.gyro_bias_x_rad_s
-message.angular_velocity.y = gyro_y_rad_s - self.gyro_bias_y_rad_s
-message.angular_velocity.z = gyro_z_rad_s - self.gyro_bias_z_rad_s
+        gyro_x_rad_s = math.radians(
+            self.read_word_signed(GYRO_XOUT_H) / GYRO_SCALE_COUNTS_PER_DEG_S
+        )
+        gyro_y_rad_s = math.radians(
+            self.read_word_signed(GYRO_YOUT_H) / GYRO_SCALE_COUNTS_PER_DEG_S
+        )
+        gyro_z_rad_s = math.radians(
+            self.read_word_signed(GYRO_ZOUT_H) / GYRO_SCALE_COUNTS_PER_DEG_S
+        )
+    except OSError as exc:
+        if (
+            self.last_error_log_time is None
+            or (now - self.last_error_log_time).nanoseconds / 1e9 > 2.0
+        ):
+            self.get_logger().error(f'Failed to read MPU6050 sample: {exc}')
+            self.last_error_log_time = now
+        return
 
-message.linear_acceleration_covariance[0] = 0.04
-message.linear_acceleration_covariance[4] = 0.04
-message.linear_acceleration_covariance[8] = 0.04
-message.angular_velocity_covariance[0] = 0.02
-message.angular_velocity_covariance[4] = 0.02
-message.angular_velocity_covariance[8] = 0.02
-self.publisher.publish(message)
+    self.last_error_log_time = None
+
+    message = Imu()
+    message.header.stamp = now.to_msg()
+    message.header.frame_id = self.frame_id
+
+    message.orientation.w = 1.0
+    message.orientation_covariance[0] = -1.0
+
+    message.linear_acceleration.x = accel_x_mps2
+    message.linear_acceleration.y = accel_y_mps2
+    message.linear_acceleration.z = accel_z_mps2
+    message.angular_velocity.x = gyro_x_rad_s - self.gyro_bias_x_rad_s
+    message.angular_velocity.y = gyro_y_rad_s - self.gyro_bias_y_rad_s
+    message.angular_velocity.z = gyro_z_rad_s - self.gyro_bias_z_rad_s
+
+    message.linear_acceleration_covariance[0] = 0.04
+    message.linear_acceleration_covariance[4] = 0.04
+    message.linear_acceleration_covariance[8] = 0.04
+    message.angular_velocity_covariance[0] = 0.02
+    message.angular_velocity_covariance[4] = 0.02
+    message.angular_velocity_covariance[8] = 0.02
+    self.publisher.publish(message)
 ```
 
 `orientation.w = 1.0` avoids an invalid all-zero quaternion. `orientation_covariance[0] = -1.0` tells readers not to use orientation from this message.
@@ -202,7 +331,8 @@ Close the bus during shutdown:
 ```python title="IMU cleanup"
 def destroy_node(self):
     try:
-        self.bus.close()
+        if self.bus is not None:
+            self.bus.close()
     finally:
         super().destroy_node()
 ```
@@ -242,6 +372,80 @@ ros2 launch "$PACKAGE_NAME" bringup.launch.py --show-args
 ```
 
 Expected result: ROS can find your IMU executable and the bringup launch file without using a path into `src/`.
+
+## Final Bringup Checkpoint
+
+By the time you leave this page, normal `bringup.launch.py` should start the required robot stack only:
+
+- `motor_driver`
+- `open_loop_odom`
+- `imu_node`
+- one static `base_link -> imu_link` transform using your measured IMU mounting
+
+If your earlier launch file still has only the three nodes, insert the static-transform node into the same `LaunchDescription` list. The numbers below are examples; replace them with your measured mounting translation and rotation.
+
+```python title="launch/bringup.launch.py required nodes"
+return LaunchDescription([
+    Node(
+        package=package_name,
+        executable='motor_driver',
+        name='motor_driver',
+        output='screen',
+        parameters=[config_path],
+    ),
+    Node(
+        package=package_name,
+        executable='open_loop_odom',
+        name='open_loop_odom',
+        output='screen',
+        parameters=[config_path],
+    ),
+    Node(
+        package=package_name,
+        executable='imu_node',
+        name='imu_node',
+        output='screen',
+        parameters=[config_path],
+    ),
+    Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='base_to_imu_link',
+        arguments=[
+            '--x', '0.04', '--y', '0.00', '--z', '0.03',
+            '--roll', '0', '--pitch', '0', '--yaw', '0',
+            '--frame-id', 'base_link', '--child-frame-id', 'imu_link',
+        ],
+    ),
+])
+```
+
+Do not add a fake `map -> odom` transform here, and do not put `simple_auton` in normal bringup.
+
+Start bringup in one terminal:
+
+```bash title="Raspberry Pi SSH terminal 1"
+WORKSPACE_NAME="cool_rover_ws"
+PACKAGE_NAME="cool_rover"
+
+source /opt/ros/jazzy/setup.bash
+source ~/"$WORKSPACE_NAME"/install/setup.bash
+ros2 launch "$PACKAGE_NAME" bringup.launch.py
+```
+
+Then check the expected nodes and transforms from another sourced terminal:
+
+```bash title="Raspberry Pi SSH terminal 2"
+WORKSPACE_NAME="cool_rover_ws"
+
+source /opt/ros/jazzy/setup.bash
+source ~/"$WORKSPACE_NAME"/install/setup.bash
+ros2 node list
+timeout 3 ros2 run tf2_ros tf2_echo odom base_link
+timeout 3 ros2 run tf2_ros tf2_echo base_link imu_link
+```
+
+Expected result: `ros2 node list` includes `/motor_driver`, `/open_loop_odom`, and `/imu_node`; the two `tf2_echo` commands print the odometry and IMU transforms before `timeout` exits.
 
 The real I2C scan, stationary readings, axis checks, covariance check, and publish-rate check happen during [Put Your Package on a Robot](/guides/robot-bringup/).
 

@@ -21,6 +21,7 @@ Run these commands in your Ubuntu terminal. Change the two values at the top to 
 WORKSPACE_NAME="cool_rover_ws"
 PACKAGE_NAME="cool_rover"
 
+source /opt/ros/jazzy/setup.bash
 mkdir -p ~/"$WORKSPACE_NAME"/src
 cd ~/"$WORKSPACE_NAME"/src
 ros2 pkg create --build-type ament_python --license MIT "$PACKAGE_NAME" --dependencies rclpy geometry_msgs sensor_msgs nav_msgs std_msgs tf2_ros
@@ -64,6 +65,9 @@ Hardware Python libraries such as `gpiozero`, `lgpio`, and `smbus` are installed
 Create folders in your package for the parts of your project:
 
 ```bash title="Ubuntu terminal"
+WORKSPACE_NAME="cool_rover_ws"
+PACKAGE_NAME="cool_rover"
+
 cd ~/"$WORKSPACE_NAME"/src/"$PACKAGE_NAME"
 mkdir -p config launch urdf meshes rviz
 ```
@@ -166,6 +170,8 @@ The package share directory is where installed non-Python files live. Later, lau
 Build from the workspace root whenever you change package metadata, add a launch/config file, or add an executable:
 
 ```bash title="Ubuntu terminal"
+WORKSPACE_NAME="cool_rover_ws"
+
 cd ~/"$WORKSPACE_NAME"
 source /opt/ros/jazzy/setup.bash
 colcon build --symlink-install

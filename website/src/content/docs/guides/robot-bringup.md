@@ -155,7 +155,7 @@ Expected result:
 - `orientation_covariance[0]` is `-1.0` if your node does not publish a fused orientation
 - the publish rate is close to your configured rate
 
-Leave the robot still, then gently rotate it by hand. A still gyro should sit near zero after calibration; turning the robot should change the matching gyro axis. If messages never arrive, use `i2cdetect -y 1` again and inspect the I2C wiring and configured address.
+Leave the robot still, then gently rotate it by hand. With bias values left at zero, a still gyro may have a small offset; turning the robot should change the matching gyro axis. Optional [gyro bias calibration](/extras/gyro-bias-calibration/) can reduce that stationary offset after core bringup works. If messages never arrive, use `i2cdetect -y 1` again and inspect the I2C wiring and configured address.
 
 ## 9. Check Each Motor Direction
 

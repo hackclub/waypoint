@@ -49,6 +49,8 @@ Create `cool_rover/cool_rover/simple_auton.py` and add an executable entry:
 Use a timer rather than `time.sleep()`. A sleeping callback cannot respond cleanly to shutdown.
 
 ```python title="simple_auton.py starter"
+import math
+
 from geometry_msgs.msg import Twist
 import rclpy
 from rclpy.node import Node
@@ -65,13 +67,13 @@ class SimpleAuton(Node):
         self.declare_parameter('second_forward_s', 1.0)
         self.declare_parameter('stop_s', 0.5)
 
-        forward = self.safe_float('forward_speed_mps')
-        turn = self.safe_float('turn_speed_rad_s')
-        delay = self.safe_float('start_delay_s')
-        first = self.safe_float('first_forward_s')
-        turn_time = self.safe_float('turn_s')
-        second = self.safe_float('second_forward_s')
-        stop = self.safe_float('stop_s')
+        forward = self.read_speed('forward_speed_mps')
+        turn = self.read_speed('turn_speed_rad_s')
+        delay = self.read_duration('start_delay_s')
+        first = self.read_duration('first_forward_s')
+        turn_time = self.read_duration('turn_s')
+        second = self.read_duration('second_forward_s')
+        stop = self.read_duration('stop_s')
 
         self.segments = [
             ('settle', delay, 0.0, 0.0),
@@ -92,13 +94,20 @@ class SimpleAuton(Node):
 
 The tuple shape is `(name, duration_seconds, linear_x_mps, angular_z_rad_s)`.
 
-Validate numeric parameters before using them:
+Validate durations and speeds separately before using them. Durations cannot be negative. Speeds only need to be finite here, because a negative `turn_speed_rad_s` is a valid way to turn the other direction.
 
 ```python title="Parameter validation"
-def safe_float(self, name: str) -> float:
+def read_duration(self, name: str) -> float:
     value = float(self.get_parameter(name).value)
-    if value < 0.0 and name.endswith('_s'):
-        raise ValueError(f'{name} must not be negative')
+    if not math.isfinite(value) or value < 0.0:
+        raise ValueError(f'{name} must be finite and nonnegative')
+    return value
+
+
+def read_speed(self, name: str) -> float:
+    value = float(self.get_parameter(name).value)
+    if not math.isfinite(value):
+        raise ValueError(f'{name} must be finite')
     return value
 ```
 

@@ -53,6 +53,7 @@ export default defineConfig({
 					label: 'Extras',
 					items: [
 						{ label: 'Event-based keyboard teleop', slug: 'extras/event-based-keyboard-teleop' },
+						{ label: 'Gyro bias calibration', slug: 'extras/gyro-bias-calibration' },
 					],
 				},
 			],

@@ -88,6 +88,10 @@ class MotorDriver(Node):
 
         self.max_output = self.read_positive_float('max_output')
         self.deadband = self.read_nonnegative_float('deadband')
+        if self.max_output > 1.0:
+            raise ValueError('max_output must be no greater than 1.0')
+        if self.deadband >= self.max_output:
+            raise ValueError('deadband must be less than max_output')
         self.command_timeout_s = self.read_positive_float('command_timeout_s')
         self.wheel_separation_m = self.read_positive_float('wheel_separation_m')
         self.approximate_max_wheel_speed_mps = self.read_positive_float(
@@ -308,6 +312,28 @@ Create `cool_rover/cool_rover/open_loop_odom.py` and add an executable entry:
 
 This node estimates pose from command velocity. It does not measure wheel movement.
 
+Start the file with the imports and a compact node wrapper:
+
+```python title="open_loop_odom.py outer scaffold"
+import math
+
+from geometry_msgs.msg import PoseStamped, TransformStamped, Twist
+from nav_msgs.msg import Odometry, Path
+import rclpy
+from rclpy.node import Node
+from tf2_ros import TransformBroadcaster
+
+
+class OpenLoopOdom(Node):
+    def __init__(self):
+        super().__init__('open_loop_odom')
+
+        # Declare and read parameters here.
+        # Create state, publishers, subscription, broadcaster, and timer here.
+```
+
+The next two snippets belong inside `__init__`: put the parameter block under "Declare and read parameters here," then put the state, publisher, subscription, broadcaster, and timer block under the second comment.
+
 Declare and read its parameters first:
 
 ```python title="Odometry parameters"
@@ -321,11 +347,36 @@ self.declare_parameter('command_timeout_s', 0.55)
 
 self.odom_frame = str(self.get_parameter('odom_frame').value)
 self.base_frame = str(self.get_parameter('base_frame').value)
-self.publish_rate_hz = float(self.get_parameter('publish_rate_hz').value)
-self.linear_scale = float(self.get_parameter('linear_scale').value)
-self.angular_scale = float(self.get_parameter('angular_scale').value)
-self.path_max_poses = int(self.get_parameter('path_max_poses').value)
-self.command_timeout_s = float(self.get_parameter('command_timeout_s').value)
+self.publish_rate_hz = self.read_positive_float('publish_rate_hz')
+self.linear_scale = self.read_finite_float('linear_scale')
+self.angular_scale = self.read_finite_float('angular_scale')
+self.path_max_poses = self.read_positive_int('path_max_poses')
+self.command_timeout_s = self.read_positive_float('command_timeout_s')
+```
+
+Add these small helper methods inside `OpenLoopOdom`, at the same indentation level as callbacks:
+
+```python title="Odometry validation helpers"
+def read_positive_float(self, name: str) -> float:
+    value = float(self.get_parameter(name).value)
+    if not math.isfinite(value) or value <= 0.0:
+        raise ValueError(f'{name} must be a positive finite number')
+    return value
+
+
+def read_finite_float(self, name: str) -> float:
+    value = float(self.get_parameter(name).value)
+    if not math.isfinite(value):
+        raise ValueError(f'{name} must be finite')
+    return value
+
+
+def read_positive_int(self, name: str) -> int:
+    raw_value = self.get_parameter(name).value
+    value = int(raw_value)
+    if value != raw_value or value <= 0:
+        raise ValueError(f'{name} must be a positive integer')
+    return value
 ```
 
 Keep state like this:
@@ -351,32 +402,47 @@ The subscription stores the most recent command:
 
 ```python title="Odometry cmd_vel callback"
 def cmd_vel_callback(self, message: Twist) -> None:
-    self.linear_mps = float(message.linear.x) * self.linear_scale
-    self.angular_rad_s = float(message.angular.z) * self.angular_scale
-    self.last_command_time = self.get_clock().now()
-```
-
-The timer integrates with actual elapsed time:
-
-```python title="Integrate pose"
-now = self.get_clock().now()
-dt = (now - self.last_time).nanoseconds / 1e9
-self.last_time = now
-
-if dt < 0.0 or dt > 1.0:
-    dt = 0.0
-
-if self.last_command_time is not None:
-    age = (now - self.last_command_time).nanoseconds / 1e9
-    if age > self.command_timeout_s:
+    forward_mps = float(message.linear.x)
+    turn_rad_s = float(message.angular.z)
+    if not math.isfinite(forward_mps) or not math.isfinite(turn_rad_s):
+        self.get_logger().error('Ignoring non-finite cmd_vel')
         self.linear_mps = 0.0
         self.angular_rad_s = 0.0
         self.last_command_time = None
+        return
 
-self.x += self.linear_mps * math.cos(self.yaw) * dt
-self.y += self.linear_mps * math.sin(self.yaw) * dt
-self.yaw += self.angular_rad_s * dt
-self.yaw = math.atan2(math.sin(self.yaw), math.cos(self.yaw))
+    self.linear_mps = forward_mps * self.linear_scale
+    self.angular_rad_s = turn_rad_s * self.angular_scale
+    self.last_command_time = self.get_clock().now()
+```
+
+The timer integrates with actual elapsed time. Put the timer work in `tick()` in this order: get the current ROS time, calculate `dt`, apply the command timeout, update `x`, `y`, and `yaw`, create the quaternion, create one message timestamp, publish `Odometry`, publish matching TF, then append and publish `Path`.
+
+```python title="Integrate pose inside tick"
+def tick(self) -> None:
+    now = self.get_clock().now()
+    dt = (now - self.last_time).nanoseconds / 1e9
+    self.last_time = now
+
+    if dt < 0.0 or dt > 1.0:
+        dt = 0.0
+
+    if self.last_command_time is not None:
+        age = (now - self.last_command_time).nanoseconds / 1e9
+        if age > self.command_timeout_s:
+            self.linear_mps = 0.0
+            self.angular_rad_s = 0.0
+            self.last_command_time = None
+
+    self.x += self.linear_mps * math.cos(self.yaw) * dt
+    self.y += self.linear_mps * math.sin(self.yaw) * dt
+    self.yaw += self.angular_rad_s * dt
+    self.yaw = math.atan2(math.sin(self.yaw), math.cos(self.yaw))
+
+    qx, qy, qz, qw = yaw_to_quaternion(self.yaw)
+    stamp = now.to_msg()
+
+    # Publish Odometry, TF, and Path next.
 ```
 
 ## Build a Quaternion
@@ -407,26 +473,28 @@ Odometry
 
 `message.pose.pose` is not a typo. The outer object combines pose with covariance. The inner object is the actual pose.
 
-```python title="Publish odometry"
-odom = Odometry()
-odom.header.stamp = stamp
-odom.header.frame_id = self.odom_frame
-odom.child_frame_id = self.base_frame
-odom.pose.pose.position.x = self.x
-odom.pose.pose.position.y = self.y
-odom.pose.pose.position.z = 0.0
-odom.pose.pose.orientation.x = qx
-odom.pose.pose.orientation.y = qy
-odom.pose.pose.orientation.z = qz
-odom.pose.pose.orientation.w = qw
-odom.twist.twist.linear.x = self.linear_mps
-odom.twist.twist.angular.z = self.angular_rad_s
-odom.pose.covariance[0] = 0.08
-odom.pose.covariance[7] = 0.08
-odom.pose.covariance[35] = 0.25
-odom.twist.covariance[0] = 0.12
-odom.twist.covariance[35] = 0.35
-self.odom_pub.publish(odom)
+The next three snippets are still inside `tick()`, after `stamp` and the quaternion variables exist.
+
+```python title="Publish odometry inside tick"
+    odom = Odometry()
+    odom.header.stamp = stamp
+    odom.header.frame_id = self.odom_frame
+    odom.child_frame_id = self.base_frame
+    odom.pose.pose.position.x = self.x
+    odom.pose.pose.position.y = self.y
+    odom.pose.pose.position.z = 0.0
+    odom.pose.pose.orientation.x = qx
+    odom.pose.pose.orientation.y = qy
+    odom.pose.pose.orientation.z = qz
+    odom.pose.pose.orientation.w = qw
+    odom.twist.twist.linear.x = self.linear_mps
+    odom.twist.twist.angular.z = self.angular_rad_s
+    odom.pose.covariance[0] = 0.08
+    odom.pose.covariance[7] = 0.08
+    odom.pose.covariance[35] = 0.25
+    odom.twist.covariance[0] = 0.12
+    odom.twist.covariance[35] = 0.35
+    self.odom_pub.publish(odom)
 ```
 
 Covariance values are estimates of uncertainty. Do not fill them with zeros to imply perfect certainty.
@@ -435,19 +503,19 @@ Covariance values are estimates of uncertainty. Do not fill them with zeros to i
 
 TF lets RViz and other tools know how frames relate. Your odometry node should broadcast `odom -> base_link` with the same pose as `/odom`.
 
-```python title="Broadcast odom to base_link"
-transform = TransformStamped()
-transform.header.stamp = stamp
-transform.header.frame_id = self.odom_frame
-transform.child_frame_id = self.base_frame
-transform.transform.translation.x = self.x
-transform.transform.translation.y = self.y
-transform.transform.translation.z = 0.0
-transform.transform.rotation.x = qx
-transform.transform.rotation.y = qy
-transform.transform.rotation.z = qz
-transform.transform.rotation.w = qw
-self.tf_broadcaster.sendTransform(transform)
+```python title="Broadcast odom to base_link inside tick"
+    transform = TransformStamped()
+    transform.header.stamp = stamp
+    transform.header.frame_id = self.odom_frame
+    transform.child_frame_id = self.base_frame
+    transform.transform.translation.x = self.x
+    transform.transform.translation.y = self.y
+    transform.transform.translation.z = 0.0
+    transform.transform.rotation.x = qx
+    transform.transform.rotation.y = qy
+    transform.transform.rotation.z = qz
+    transform.transform.rotation.w = qw
+    self.tf_broadcaster.sendTransform(transform)
 ```
 
 Do not add a fake `map -> odom` transform for this project. RViz should use `odom` as the fixed frame.
@@ -456,21 +524,36 @@ Do not add a fake `map -> odom` transform for this project. RViz should use `odo
 
 Open the official [`Path` message definition](https://docs.ros.org/en/jazzy/p/nav_msgs/msg/Path.html). `poses` is a list of `PoseStamped` messages.
 
-```python title="Append and trim path"
-pose = PoseStamped()
-pose.header = odom.header
-pose.pose = odom.pose.pose
-self.path.header.stamp = stamp
-self.path.header.frame_id = self.odom_frame
-self.path.poses.append(pose)
-if len(self.path.poses) > self.path_max_poses:
-    self.path.poses = self.path.poses[-self.path_max_poses:]
-self.path_pub.publish(self.path)
+```python title="Append and trim path inside tick"
+    pose = PoseStamped()
+    pose.header = odom.header
+    pose.pose = odom.pose.pose
+    self.path.header.stamp = stamp
+    self.path.header.frame_id = self.odom_frame
+    self.path.poses.append(pose)
+    if len(self.path.poses) > self.path_max_poses:
+        self.path.poses = self.path.poses[-self.path_max_poses:]
+    self.path_pub.publish(self.path)
 ```
 
 OrphBot's `odom_publisher.py` is a good file to inspect for nested ROS assignments and path trimming. Keep your node name and executable name consistent with this guide: `open_loop_odom`.
 
-Use the same `main()` shape as the motor node: initialize ROS, create the node, `rclpy.spin(node)`, destroy the node in `finally`, and call `rclpy.shutdown()` if ROS is still running.
+Finish the file with the same safe lifecycle pattern as the other nodes:
+
+```python title="Open-loop odom main"
+def main(args=None):
+    rclpy.init(args=args)
+    node = OpenLoopOdom()
+
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
+```
 
 ## Build and Inspect
 
