@@ -1,4 +1,4 @@
-﻿---
+---
 title: Create Your Workspace
 description: Set up the base files of your Python ROS 2 package.
 ---
@@ -23,16 +23,16 @@ PACKAGE_NAME="cool_rover"
 
 mkdir -p ~/"$WORKSPACE_NAME"/src
 cd ~/"$WORKSPACE_NAME"/src
-ros2 pkg create --build-type ament_python --license MIT "$PACKAGE_NAME" --dependencies rclpy geometry_msgs sensor_msgs nav_msgs tf2_ros
+ros2 pkg create --build-type ament_python --license MIT "$PACKAGE_NAME" --dependencies rclpy geometry_msgs sensor_msgs nav_msgs std_msgs tf2_ros
 ```
 
-`ament_python` makes this a Python package. The dependencies here cover the message types this guide uses; add more only when your code needs them.
+`ament_python` makes this a Python package. The dependencies here cover the message types this guide uses; add more only when your code imports them.
 
 Open the workspace in VS Code. On Windows, use the Remote - WSL window so VS Code edits the Ubuntu files directly.
 
 ## Know the Package Files
 
-The generated package contains the base files you will extend. If your package is named `cool_rover`, the important paths would look like this:
+If your package is named `cool_rover`, the important paths look like this:
 
 ```text title="Package layout"
 cool_rover_ws/
@@ -45,7 +45,19 @@ cool_rover_ws/
       resource/cool_rover  package-index marker
 ```
 
-Update the generated author, description, and license metadata before you submit. A maintainer email can be a real email, a project contact, or omitted if you do not want to publish one. For a field-by-field explanation, use the official [ROS 2 Python package guide](https://docs.ros.org/en/jazzy/How-To-Guides/Developing-a-ROS-2-Package.html).
+The outer `cool_rover/` is the ROS package. The inner `cool_rover/` is the Python module. That double name looks strange at first, but it is normal for Python ROS packages.
+
+Update the generated author, description, maintainer email, and license metadata before you submit. The `maintainer` tag in `package.xml` expects an email attribute; use a real contact address you are comfortable publishing or a project email, not the generated `todo.todo` placeholder.
+
+You will also need these execution dependencies once you add launch files and package-share lookup:
+
+```xml title="package.xml excerpt"
+<exec_depend>ament_index_python</exec_depend>
+<exec_depend>launch</exec_depend>
+<exec_depend>launch_ros</exec_depend>
+```
+
+Hardware Python libraries such as `gpiozero`, `lgpio`, and `smbus` are installed on the Raspberry Pi with Ubuntu packages during robot bringup. Add ROS dependencies to `package.xml` when your package imports ROS packages; install board-specific Python libraries on the Pi when the hardware node needs them.
 
 ## Add Project Folders
 
@@ -55,8 +67,6 @@ Create folders in your package for the parts of your project:
 cd ~/"$WORKSPACE_NAME"/src/"$PACKAGE_NAME"
 mkdir -p config launch urdf meshes rviz
 ```
-
-Use these folders for:
 
 | Folder | Purpose |
 | --- | --- |
@@ -72,7 +82,7 @@ Keep physical values in configuration files instead of burying them in node call
 
 A node is a running program. A Python file sitting on disk is not a ROS node until you build the package and run its executable.
 
-Create a tiny first node so you can prove `console_scripts` works before adding hardware code. Put this file inside the inner Python module. For the example package, the path is `cool_rover/cool_rover/hello_node.py`.
+Create a tiny first node that stays alive so you can inspect it. Put this file inside the inner Python module. For the example package, the path from the workspace `src/` folder is `cool_rover/cool_rover/hello_node.py`.
 
 ```python title="cool_rover/hello_node.py"
 import rclpy
@@ -82,14 +92,21 @@ from rclpy.node import Node
 class HelloNode(Node):
     def __init__(self):
         super().__init__('hello_node')
-        self.get_logger().info('Hello from my Waypoint package')
+        self.counter = 0
+        self.timer = self.create_timer(1.0, self.say_hello)
+
+    def say_hello(self):
+        self.counter += 1
+        self.get_logger().info(f'Hello from my Waypoint package #{self.counter}')
 
 
 def main(args=None):
     rclpy.init(args=args)
     node = HelloNode()
     try:
-        rclpy.spin_once(node, timeout_sec=0.5)
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
     finally:
         node.destroy_node()
         rclpy.shutdown()
@@ -98,6 +115,8 @@ def main(args=None):
 if __name__ == '__main__':
     main()
 ```
+
+The timer calls `say_hello()` once per second. `rclpy.spin(node)` keeps the process alive so timers and callbacks can run.
 
 Each Python node needs a `main()` function and a matching line in `setup.py` so ROS can run it. For the example package, add this entry:
 
@@ -109,7 +128,7 @@ entry_points={
 },
 ```
 
-Later you will add entries for your motor driver, open-loop odometry, IMU publisher, teleop, and autonomy nodes. A typo in `console_scripts` is why `ros2 run` cannot find many otherwise-correct nodes.
+Later you will add entries for `motor_driver`, `open_loop_odom`, `imu_node`, and `simple_auton`. A typo in `console_scripts` is why `ros2 run` cannot find many otherwise-correct nodes.
 
 ## Install Launch and Config Assets
 
@@ -121,20 +140,21 @@ Add `glob` and `os` imports near the top of `setup.py`, then include the asset f
 from glob import glob
 import os
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 package_name = 'cool_rover'
 
 setup(
     name=package_name,
+    packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
         (os.path.join('share', package_name, 'config'), glob('config/*.yaml')),
-        (os.path.join('share', package_name, 'urdf'), glob('urdf/*.urdf')),
+        (os.path.join('share', package_name, 'urdf'), glob('urdf/*')),
         (os.path.join('share', package_name, 'meshes'), glob('meshes/*')),
-        (os.path.join('share', package_name, 'rviz'), glob('rviz/*.rviz')),
+        (os.path.join('share', package_name, 'rviz'), glob('rviz/*')),
     ],
 )
 ```
@@ -154,24 +174,44 @@ source install/setup.bash
 
 `source /opt/ros/jazzy/setup.bash` loads the ROS 2 underlay for the current terminal. `source install/setup.bash` loads your workspace overlay, which is how this terminal learns about the package you just built. **A fresh terminal needs both commands again.**
 
-`colcon` creates `build/`, `install/`, and `log/`. `install/` is the built workspace ROS uses. `--symlink-install` keeps Python edits easy to iterate on while you are writing the package.
+`colcon` creates `build/`, `install/`, and `log/`. `install/` is the built workspace ROS uses. `--symlink-install` keeps Python edits fast to iterate on while you are writing the package.
 
 ## Check Discovery
 
-Run these commands from the same sourced terminal:
+Run the hello node in one terminal:
 
-```bash title="Ubuntu terminal"
+```bash title="Ubuntu terminal 1"
+WORKSPACE_NAME="cool_rover_ws"
+PACKAGE_NAME="cool_rover"
+
+cd ~/"$WORKSPACE_NAME"
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+ros2 run "$PACKAGE_NAME" hello
+```
+
+Leave it running. In a second terminal, inspect it:
+
+```bash title="Ubuntu terminal 2"
+WORKSPACE_NAME="cool_rover_ws"
+PACKAGE_NAME="cool_rover"
+
+cd ~/"$WORKSPACE_NAME"
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
 ros2 pkg prefix "$PACKAGE_NAME"
 ros2 pkg executables "$PACKAGE_NAME"
-ros2 run "$PACKAGE_NAME" hello
+ros2 node list
+ros2 node info /hello_node
 ```
 
 Expected result:
 
 - `ros2 pkg prefix` prints a path inside your workspace's `install/` folder
 - `ros2 pkg executables` lists `cool_rover hello` if you used the example names
-- `ros2 run` prints `Hello from my Waypoint package`
+- `/hello_node` appears in `ros2 node list` while terminal 1 is still running it
+- `ros2 node info /hello_node` prints node information
 
 If `ros2 run` cannot find the executable, check that the `console_scripts` line uses the exact package, module, and `main` function names. If ROS cannot find the package at all, rebuild from the workspace root and source `install/setup.bash` again.
 
-When the build completes and discovery works, your scaffold is ready for robot nodes. Continue to [Build movement nodes](/guides/ros2-package-guide/driving/).
+When the build completes and discovery works, continue to [Understand messages, parameters, and launch files](/guides/ros2-package-guide/messages-and-launch/).

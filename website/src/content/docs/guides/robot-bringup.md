@@ -5,7 +5,7 @@ description: Move your own ROS 2 package from development computer to real Waypo
 
 Come here after your package is in your GitHub repository and your Waypoint kit has arrived!
 
-By the end you will have your robot driving around!
+By the end you will have a safe path from package installation to supervised driving. The robot gets to move only after the boring checks pass, which is exactly the point.
 
 :::caution[Real hardware]
 For every powered motor check, put the robot on a stand or remove the wheels so the chassis cannot drive away.
@@ -27,7 +27,7 @@ Install the ROS 2 repository and base tools by following [Set Up Ubuntu for ROS 
 
 ```bash title="Raspberry Pi SSH terminal"
 sudo apt update
-sudo apt install -y python3-gpiozero python3-lgpio python3-smbus i2c-tools
+sudo apt install -y python3-gpiozero python3-lgpio python3-smbus python3-smbus2 i2c-tools
 ```
 
 ## 2. Enable and Check I2C
@@ -44,12 +44,12 @@ You should see the address your IMU uses, often `68` or `69` for an MPU6050. If 
 
 ## 3. Bring Your Package Over
 
-Clone your repository into a workspace on the Pi. Keep the same workspace and package names you used while developing, but do not assume that a path from your laptop exists on the robot. This example uses `cool_rover_ws`, `cool_rover`, and a fake GitHub URL. Replace those values with yours before running the commands.
+Clone your repository into a workspace on the Pi. Keep the same workspace and package names you used while developing, but do not assume that a path from your laptop exists on the robot. This example uses `cool_rover_ws`, `cool_rover`, and `https://github.com/cool-hacker/cool-rover.git`. Replace those values with yours before running the commands.
 
 ```bash title="Raspberry Pi SSH terminal"
 WORKSPACE_NAME="cool_rover_ws"
 PACKAGE_NAME="cool_rover"
-REPOSITORY_URL="https://github.com/YOUR_USER/YOUR_REPO.git"
+REPOSITORY_URL="https://github.com/cool-hacker/cool-rover.git"
 
 mkdir -p ~/"$WORKSPACE_NAME"/src
 cd ~/"$WORKSPACE_NAME"/src
@@ -87,10 +87,10 @@ Your bringup launch file should start the nodes you made.
 
 - your motor node
 - your IMU node
-- your open-loop odometry node
+- your `open_loop_odom` node
 - `robot_state_publisher` only if you completed the optional robot-model polish
 
-I would keep the initial motor-output limit low and easy to override from the launch command.
+I would keep the initial motor-output limit low and quick to override from the launch command.
 
 ```bash title="Raspberry Pi SSH terminal"
 ros2 launch "$PACKAGE_NAME" bringup.launch.py
@@ -111,9 +111,12 @@ source ~/"$WORKSPACE_NAME"/install/setup.bash
 ros2 node list
 ros2 topic list -t
 ros2 topic info /cmd_vel --verbose
+ros2 param get /motor_driver max_output
+ros2 param get /motor_driver command_timeout_s
+ros2 param get /imu_node frame_id
 ```
 
-You should find your motor, IMU, and odometry nodes, plus `/cmd_vel`, `/imu/data_raw`, `/odom`, `/path`, `/tf`, and `/tf_static` where appropriate. `ros2 topic info /cmd_vel --verbose` should show the motor and odometry nodes as subscribers. Before teleop or autonomy starts, it should not show an unexpected command publisher.
+You should find `/motor_driver`, `/imu_node`, and `/open_loop_odom`, plus `/cmd_vel`, `/imu/data_raw`, `/odom`, `/path`, `/tf`, and `/tf_static` where appropriate. `ros2 topic info /cmd_vel --verbose` should show the motor and odometry nodes as subscribers. Before teleop or autonomy starts, it should not show an unexpected command publisher.
 
 If a node is absent, read the launch output before changing code. A missing node usually points to an import error, bad executable entry, missing dependency, or a YAML key that does not match the node name.
 
@@ -277,7 +280,7 @@ In RViz:
 - add **Axes** and set the reference frame to `base_link`
 - add **RobotModel** only if you completed the optional robot-model polish step
 
-Keep the view minimal. It should help you see the robot's origin, body direction, and path.
+Keep the view minimal. It should help you see the robot's origin, body direction, and path. In the TF display, confirm `odom -> base_link` exists and that your package provides or documents `base_link -> imu_link`.
 
 ## 13. Drive Manually
 
@@ -305,13 +308,13 @@ ros2 topic info /cmd_vel --verbose
 ros2 topic echo /cmd_vel
 ```
 
-Move to floor driving only after stand checks pass. Start with low speed limits and enough open space to cut power without chasing the robot.
+Move to floor driving only after stand checks pass. Start with low speed limits and enough open space to cut power without chasing the robot. If standard terminal teleop works but feels awkward on your system, the optional [event-based keyboard teleop extra](/extras/event-based-keyboard-teleop/) can be added later.
 
 ## 14. Run Autonomy Last
 
 Only after manual movement, IMU, odometry, TF, and RViz all behave individually should you start the autonomous node you wrote. Begin with low speeds and a short routine. Watch the robot and `/cmd_vel`; stop immediately if its real behavior differs from your planned table.
 
-Before autonomy starts, check publisher count:
+Before autonomy starts, check publisher count from a sourced terminal:
 
 ```bash title="Computer Ubuntu terminal"
 ros2 topic info /cmd_vel --verbose
@@ -325,7 +328,7 @@ Teleop and autonomy should not publish at the same time unless you deliberately 
 - the robot-side watchdog stops the motors if autonomy stops publishing
 - the routine ends with zero output
 
-When this is working, document the command sequence and make a short video in your README. That helps someone in understanding what you built and how you brought it to life!
+When this is working, document the command sequence, hardware pins, IMU orientation, network settings, and a short video in your README. That helps someone understand what you built and how you brought it to life!
 
 ## Common Bringup Symptoms
 
