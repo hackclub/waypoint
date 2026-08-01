@@ -14,7 +14,7 @@ By the time you finish this guide, your repository should contain a package that
 - works with standard ROS keyboard teleop and includes a small autonomous routine you wrote
 - has configuration and launch files that make the package understandable to someone else
 
-You are building source code, not a copy of a finished robot. The pin assignments, package name, motor settings, IMU orientation, autonomous behavior, and documentation should come from your own design.
+Make your own code! Dont just copy my example. The pin assignments, package name, motor settings, IMU orientation, and autonomous behavior should come from your own design.
 
 ## What You Are Building
 
@@ -29,9 +29,12 @@ ROS 2 lets small programs called **nodes** exchange structured messages. For thi
 
 Teleop and autonomy both publish the same `Twist` message. That separation is the useful ROS idea here: the motor node handles the hardware once, while different nodes can request motion. The official [topics, services, and actions overview](https://docs.ros.org/en/jazzy/How-To-Guides/Topics-Services-Actions.html) explains the broader ROS 2 communication model.
 
-## Why Jazzy?
+<details>
+  <summary>Why are the guides using ROS 2 Jazzy?</summary>
+  The Waypoint guides target **ROS 2 Jazzy** on **Ubuntu 24.04**. ROS provides Jazzy binaries for Ubuntu 24.04 on both 64-bit x86 development computers and 64-bit ARM computers, and Ubuntu supports Ubuntu Server on the Raspberry Pi Zero 2 W. That gives the laptop and the Pi the same ROS release later. See [ROS 2 Jazzy platform support](https://docs.ros.org/en/jazzy/Installation/Alternatives/Ubuntu-Install-Binary.html) and [Ubuntu's Raspberry Pi support table](https://ubuntu.com/hardware/docs/boards/how-to/ubuntu_supported/raspberry-pi/).
 
-Waypoint targets **ROS 2 Jazzy** on **Ubuntu 24.04**. ROS provides Jazzy binaries for Ubuntu 24.04 on both 64-bit x86 development computers and 64-bit ARM computers, and Ubuntu supports Ubuntu Server on the Raspberry Pi Zero 2 W. That gives the laptop and the Pi the same ROS release later. See [ROS 2 Jazzy platform support](https://docs.ros.org/en/jazzy/Installation/Alternatives/Ubuntu-Install-Binary.html) and [Ubuntu's Raspberry Pi support table](https://ubuntu.com/hardware/docs/boards/how-to/ubuntu_supported/raspberry-pi/).
+  (Also I used it before on my own learning robot!)
+</details>
 
 ## Learn From Real Code
 
@@ -39,10 +42,10 @@ Use examples to answer a specific question, then write the version that fits you
 
 - [ROS 2's official package guide](https://docs.ros.org/en/jazzy/How-To-Guides/Developing-a-ROS-2-Package.html) is the best reference for package structure, `package.xml`, `setup.py`, and Python executables.
 - [ROS 2's Python publisher/subscriber tutorial](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber.html) is the best starting point for `rclpy` node structure.
-- [OrphBot's example package](https://github.com/SharKingStudios/orphbot-package) is a small Waypoint-oriented codebase to inspect after you understand the sections here.
+- [OrphBot's example package](https://github.com/SharKingStudios/orphbot-package) is a small example codebase to inspect to help you understand the sections here.
 - [Terralift](https://github.com/SharKingStudios/Terralift) is a larger real robot. Its `drivetrain_node.py`, `imu_node.py`, and `open_loop_odom_node.py` show how the same ideas grow in a more complex project.
 
-Do not rename an example package and submit it. Follow a topic from publisher to subscriber, read the code around it, and adapt the idea to your own hardware and behavior.
+**Do not rename an example package and submit it.** *(I am checking...)* Follow a topic from publisher to subscriber and adapt the idea to your own hardware and behavior.
 
 ## Your Route
 
@@ -54,9 +57,9 @@ Work through these pages in order. Each page ends by pointing to the next piece 
 4. [Add teleop and autonomy](/guides/ros2-package-guide/autonomy/) through the same movement topic.
 5. [Polish your package](/guides/ros2-package-guide/polish/) before submitting it.
 
-For the installation commands, use [Set Up Ubuntu for ROS 2](/reference/set-up-ubuntu-for-ros/). Windows students do that in WSL Ubuntu 24.04; Linux students use their terminal; macOS students use an Ubuntu 24.04 VM or remote Ubuntu computer.
+For the installation commands, use [Set Up Ubuntu for ROS 2](/reference/set-up-ubuntu-for-ros/). Windows users do that in WSL Ubuntu 24.04; Linux users can use their terminal; macOS peeps use an Ubuntu 24.04 VM or remote Ubuntu computer.
 
-## Words You Will Keep Seeing
+## Words You Should Know
 
 | Word | Meaning |
 | --- | --- |
@@ -65,6 +68,6 @@ For the installation commands, use [Set Up Ubuntu for ROS 2](/reference/set-up-u
 | Node | One running ROS program with a focused job. |
 | Topic | A named stream of messages between nodes. |
 | Parameter | A named setting supplied to a node, such as a GPIO pin or speed limit. |
-| Launch file | A Python file that starts the nodes that belong together. |
+| Launch file | A Python file that starts the nodes that run together. |
 
-Start with [Create your workspace](/guides/ros2-package-guide/workspace/).
+Start with [Creating your workspace](/guides/ros2-package-guide/workspace/).

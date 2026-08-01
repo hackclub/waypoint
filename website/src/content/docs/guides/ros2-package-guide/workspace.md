@@ -9,7 +9,11 @@ You are starting a Python ROS 2 package. Its base is a workspace, the package fo
 
 Choose a workspace folder and a lower-case package name before creating anything. For example, someone might choose `yard_rover_ws` and `yard_rover`. These are examples, not names you need to use. (In fact I encourage you to get creative with this!)
 
-Package names should use lower-case letters, numbers, and underscores. Pick something that identifies your robot instead of a generic name such as `test`.
+:::tip[Tip]
+Package names should only use lower-case letters, numbers, and underscores.
+:::
+
+Pick something that identifies your robot instead of a generic name such as `test`!
 
 ## Create the Scaffold
 
@@ -51,8 +55,6 @@ Create folders in your package for the parts of your project:
 ```
 
 The `config/` folder is for values that follow your physical build: motor-driver channels, inversion flags, output limits, I2C address, IMU orientation, and timing. Keep those values out of the middle of your node logic.
-
-You can add `urdf/` and `meshes/` later as polish; they are not required for this package milestone.
 
 ## Export Your First Node
 

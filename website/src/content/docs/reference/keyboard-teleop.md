@@ -3,9 +3,9 @@ title: Event-Based Keyboard Teleop
 description: An optional ROS 2 keyboard teleop that stops on actual key release instead of OS key-repeat behavior.
 ---
 
-This is an optional polish feature. Standard [`teleop_twist_keyboard`](https://github.com/ros2/teleop_twist_keyboard) already speaks `/cmd_vel`; use it first so you understand the normal ROS path.
+This is an optional polish feature. Standard [`teleop_twist_keyboard`](https://github.com/ros2/teleop_twist_keyboard) already speaks `/cmd_vel` and is perfectly ok for your submission.
 
-The complete node below is provided because terminal key handling has a real limitation: terminals receive characters and operating-system key repeat, not dependable key-release events. This version opens a small Tk window and uses press/release events instead. Holding a movement key publishes movement. Releasing it schedules a stop. Space sends an immediate stop burst.
+The complete node below is provided because terminal key handling has a limitation (at least in Windows WSL): terminals receive characters and operating-system key repeat, not key-release events. This version opens a small Tk window and uses press/release events instead. Holding a movement key publishes movement. Releasing it schedules a stop. Space sends an immediate stop (in case something went wrong).
 
 ## Install the Tiny GUI Dependency
 
@@ -198,8 +198,10 @@ source install/setup.bash
 ros2 run <package_name> <teleop_command>
 ```
 
-Focus the small window. Hold `W`, `S`, `A`, or `D`; release the key to stop that motion. `W` plus `A` produces a forward curve. Press Space to immediately clear all held keys and send several zero commands. The robot-side motor watchdog should still exist as a separate safety layer.
+Focus the small window. Hold `W`, `S`, `A`, or `D`; release the key to stop that motion. `W` plus `A` produces a forward curve. Press Space to immediately clear all held keys and send several zero commands. 
 
-On Windows, run this in the Ubuntu WSL terminal. WSLg on Windows 11 normally supplies the window. If you do not have a GUI-capable Ubuntu environment, use standard terminal teleop instead; this node requires real GUI key events to do its job.
+:::caution[Warning]
+The robot-side motor watchdog should still exist as a separate safety layer to stop the robot if the teleop disconnects.
+:::
 
-The provided node is intentionally generic. Read it, change its title, keys, or speed parameters if you like, and make sure you can explain why the release debounce and stop burst exist before putting it in a submission.
+The provided node is intentionally generic. Read it, change its title, keys, or speed parameters if you like.

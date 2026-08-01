@@ -3,7 +3,7 @@ title: Publish IMU Data
 description: Add the required IMU node to your Waypoint package.
 ---
 
-Every Waypoint robot includes an IMU. Add a node that reads the physical sensor over I2C and publishes `sensor_msgs/msg/Imu` on `/imu/data_raw`.
+Every Waypoint robot will include an IMU. Add a node that reads the physical sensor over I2C and publishes `sensor_msgs/msg/Imu` on `/imu/data_raw`.
 
 ## Use the ROS IMU Message Correctly
 
@@ -15,7 +15,7 @@ An `Imu` message contains three types of measurement:
 | `angular_velocity` | gyroscope axes | radians per second |
 | `orientation` | a real fused attitude estimate, when you have one | quaternion |
 
-The MPU6050 gives you accelerometer and gyroscope data. For `/imu/data_raw`, publish those readings. Do not fill in an invented orientation. ROS uses `orientation_covariance[0] = -1` to mark orientation unavailable. Read the official [`Imu` message definition](https://docs.ros.org/en/jazzy/p/sensor_msgs/msg/Imu.html) before you write the publisher.
+The MPU6050 gives you accelerometer and gyroscope data. For `/imu/data_raw`, publish those readings. Read the official [`Imu` message definition](https://docs.ros.org/en/jazzy/p/sensor_msgs/msg/Imu.html) before you write the publisher.
 
 ## Decide How the Sensor Sits in the Robot
 
@@ -41,6 +41,6 @@ Keep the register reads and scale conversions in small functions. The [MPU-6000/
 
 Add an executable entry for the IMU node and add it to the same bringup launch file as movement. Include its configuration YAML alongside the motor and odometry settings.
 
-The post-kit [Verify Your Robot Data](/reference/verify-your-robot/) reference covers the I2C and message checks. For this package milestone, make sure the source code, parameters, and launch entry are present and clear.
+After you build your robot, the [Verify Your Robot Data](/reference/verify-your-robot/) reference covers the I2C and message checks. For this package milestone, make sure the source code, parameters, and launch entry are present and clear.
 
 Continue to [Add teleop and autonomy](/guides/ros2-package-guide/autonomy/).

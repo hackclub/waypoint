@@ -3,7 +3,7 @@ title: Polish Your Package
 description: Make the package easy to understand and enjoyable to use before you submit it.
 ---
 
-Your required package is complete when it has movement, open-loop odometry, the IMU node, teleop compatibility, and your autonomous routine. This page is for the choices that make the project clearer and more polished without turning it into a different project.
+Your package is complete when it has movement, open-loop odometry, the IMU node, teleop compatibility, and your autonomous routine! This page is for the choices that make the project better and more polished.
 
 ## Make the Repository Readable
 
@@ -13,7 +13,7 @@ A reviewer should be able to open the repository and quickly find:
 - `config/` values for motor channels, limits, IMU settings, and dead-reckoning scales
 - `launch/` files for normal bringup and your autonomous routine
 - a README explaining what the robot does, its package layout, and how the nodes connect
-- the chassis CAD and PCB files required by the rest of Waypoint
+- the chassis CAD and PCB files (required for submission)
 
 A small topic diagram in the README is useful. For example, show teleop and autonomy feeding `/cmd_vel`, then motor driver and odometry subscribing to it, with the IMU publishing separately.
 

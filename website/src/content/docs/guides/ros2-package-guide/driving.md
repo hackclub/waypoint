@@ -3,7 +3,7 @@ title: Build Movement Nodes
 description: Implement the motor and open-loop odometry nodes for the shared Waypoint robot hardware.
 ---
 
-This step gives the package its movement backbone. All Waypoint kits use the same differential-drive hardware and do not have wheel encoders, so your package needs two related nodes:
+This step gives the package its movement backbone. All Waypoint kits use the same differential-drive hardware, so your package needs two related nodes:
 
 - a motor node that subscribes to `/cmd_vel` and controls the real motor driver
 - an odometry node that subscribes to `/cmd_vel` and publishes open-loop dead reckoning
@@ -34,9 +34,9 @@ right request = forward request + turn gain * turn request
 
 Your node should clamp the requests to the safe range your driver accepts. Put hardware-specific values in `config/`: GPIO or channel numbers, left/right inversion, output limit, deadband, and a command timeout.
 
-Add a watchdog timer. If `/cmd_vel` stops arriving, the node must command both sides to zero. Keep shutdown code that also stops the driver. This is part of the node's job, not a separate feature.
+Add a watchdog timer. If `/cmd_vel` stops arriving after some certain interval of time, the node must command both sides to zero. Keep shutdown code that also stops the driver. This is part of the node's job, not a separate feature.
 
-Use the [OrphBot example package](https://github.com/SharKingStudios/orphbot-package) to study a small Waypoint-style implementation. For a larger example of a motor command path, trace the movement nodes in [Terralift](https://github.com/SharKingStudios/Terralift). Write the node for the hardware and names in your own project.
+Use the [OrphBot example package](https://github.com/SharKingStudios/orphbot-package) to study a small Waypoint-style implementation. Write the node for the hardware and names in your own project.
 
 ## Write Open-Loop Odometry
 
@@ -52,7 +52,7 @@ yaw += angular_velocity * dt
 
 Publish the resulting pose as `nav_msgs/msg/Odometry` on `/odom`, publish the `odom -> base_link` transform, and append poses to a bounded `nav_msgs/msg/Path` on `/path`. Add a static `map -> odom` transform in your later bringup launch file so RViz has a fixed origin.
 
-Document that this package uses open-loop dead reckoning because the kit has no wheel encoders. Tune the linear and angular scale values later from real movement, and keep those scales in configuration instead of changing the integration logic.
+You can tune the linear and angular scale values later from real movement to make this more accurate. Keep these numbers in configuration files so you dont need to rewrite the code.
 
 ## Put the Nodes in Bringup
 
