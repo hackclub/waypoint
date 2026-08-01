@@ -3,38 +3,47 @@ title: Creating Your ROS 2 Package
 description: Build the source package you will submit with your Waypoint robot design.
 ---
 
-Your ROS 2 package is one of the three things required for a Waypoint submission, alongside your PCB and chassis CAD. It is the source code that will run on the Raspberry Pi in your kit.
+Your ROS 2 package is the last thing required for a Waypoint submission! It is the source code that will run on the Raspberry Pi in your kit.
+
+ROS 2 lets separate programs communicate using named interfaces. It is not a desktop operating system. A **node** is one running program with a focused job, a **topic** is a named stream of messages, and a **message type** defines the fields and units on that topic.
 
 By the time you finish this guide, your repository should contain a package that:
 
 - accepts standard `Twist` movement commands on `/cmd_vel`
-- turns those commands into real motor-driver output for the shared Waypoint hardware
+- turns those commands into real motor-driver output for your robot hardware
 - publishes data from the required IMU on `/imu/data_raw`
 - publishes open-loop dead reckoning because Waypoint kits do not include wheel encoders
 - works with standard ROS keyboard teleop and includes a small autonomous routine you wrote
 - has configuration and launch files that make the package understandable to someone else
 
-Make your own code! Dont just copy my example. The pin assignments, package name, motor settings, IMU orientation, and autonomous behavior should come from your own design.
+Make your own code. The pin assignments, package name, motor settings, IMU orientation, and autonomous behavior should come from your own design.
 
 ## What You Are Building
 
-ROS 2 lets small programs called **nodes** exchange structured messages. For this package, keep the path simple:
+Standard ROS interfaces let teleop, inspection tools, your motor node, and your autonomous node work together without every tool knowing your motor wiring.
 
 | Node | Input | Output | Job |
 | --- | --- | --- | --- |
 | Motor driver | `/cmd_vel` (`Twist`) | your motor driver's real control signals | move the chassis |
 | IMU | physical I2C readings | `/imu/data_raw` (`Imu`) | report acceleration and turn rate |
-| Open-loop odometry | `/cmd_vel` | `/odom`, `/path`, and `odom -> base_link` | track the robot's commanded motion |
+| Open-loop odometry | `/cmd_vel` | `/odom`, `/path`, and `odom -> base_link` | estimate commanded motion |
 | Autonomous routine | its timing or state | `/cmd_vel` (`Twist`) | make the robot follow your short routine |
 
-Teleop and autonomy both publish the same `Twist` message. That separation is the useful ROS idea here: the motor node handles the hardware once, while different nodes can request motion. The official [topics, services, and actions overview](https://docs.ros.org/en/jazzy/How-To-Guides/Topics-Services-Actions.html) explains the broader ROS 2 communication model.
+Teleop and autonomy both publish the same `Twist` message. Do not run them at the same time unless you deliberately add code to cleanly switch between them!
 
-<details>
-  <summary>Why are the guides using ROS 2 Jazzy?</summary>
-  The Waypoint guides target **ROS 2 Jazzy** on **Ubuntu 24.04**. ROS provides Jazzy binaries for Ubuntu 24.04 on both 64-bit x86 development computers and 64-bit ARM computers, and Ubuntu supports Ubuntu Server on the Raspberry Pi Zero 2 W. That gives the laptop and the Pi the same ROS release later. See [ROS 2 Jazzy platform support](https://docs.ros.org/en/jazzy/Installation/Alternatives/Ubuntu-Install-Binary.html) and [Ubuntu's Raspberry Pi support table](https://ubuntu.com/hardware/docs/boards/how-to/ubuntu_supported/raspberry-pi/).
+:::tip[Note]
+Open-loop odometry is an estimate based on commanded movement. Without wheel encoders, it cannot prove how far the robot physically moved, and drift is expected.
+:::
 
-  (Also I used it before on my own learning robot!)
-</details>
+## Three Phases
+
+**Phase A: Learn ROS 2 on the computer**
+
+Install ROS 2 Jazzy, run official examples, inspect nodes and topics, understand workspaces and packages, and create a tiny first node.
+
+**Phase B: Write your package**
+
+Create the package structure, define motor commands, write open-loop odometry, write the IMU publisher, add teleop, add an autonomous routine, and create launch/config files.
 
 ## Learn From Real Code
 
@@ -42,32 +51,22 @@ Use examples to answer a specific question, then write the version that fits you
 
 - [ROS 2's official package guide](https://docs.ros.org/en/jazzy/How-To-Guides/Developing-a-ROS-2-Package.html) is the best reference for package structure, `package.xml`, `setup.py`, and Python executables.
 - [ROS 2's Python publisher/subscriber tutorial](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber.html) is the best starting point for `rclpy` node structure.
-- [OrphBot's example package](https://github.com/SharKingStudios/orphbot-package) is a small example codebase to inspect to help you understand the sections here.
-- [Terralift](https://github.com/SharKingStudios/Terralift) is a larger real robot. Its `drivetrain_node.py`, `imu_node.py`, and `open_loop_odom_node.py` show how the same ideas grow in a more complex project.
+- [OrphBot's example package](https://github.com/SharKingStudios/orphbot-package) is the example Waypoint robot package. Inspect one file at a time to answer a specific question, such as where `console_scripts` entries live or which values are OrphBot-specific hardware choices.
+- [Terralift](https://github.com/SharKingStudios/Terralift) is a larger real robot. Its drivetrain, IMU, and open-loop odometry nodes show how the same ideas grow in a more complex project. (This is the real robot I used for my research project!)
 
-**Do not rename an example package and submit it.** *(I am checking...)* Follow a topic from publisher to subscriber and adapt the idea to your own hardware and behavior.
+Do not rename an example package and submit it. Your submission must be your own!
 
 ## Your Route
 
-Work through these pages in order. Each page ends by pointing to the next piece of the same package.
+Work through these pages in order.
 
 1. [Create your workspace](/guides/ros2-package-guide/workspace/) and set up the package files.
 2. [Build movement nodes](/guides/ros2-package-guide/driving/) for `/cmd_vel`, motors, and dead reckoning.
 3. [Publish IMU data](/guides/ros2-package-guide/imu/) from the required sensor.
 4. [Add teleop and autonomy](/guides/ros2-package-guide/autonomy/) through the same movement topic.
 5. [Polish your package](/guides/ros2-package-guide/polish/) before submitting it.
+6. [Put your package on a robot](/guides/robot-bringup/) after the kit is assembled.
 
-For the installation commands, use [Set Up Ubuntu for ROS 2](/reference/set-up-ubuntu-for-ros/). Windows users do that in WSL Ubuntu 24.04; Linux users can use their terminal; macOS peeps use an Ubuntu 24.04 VM or remote Ubuntu computer.
+For installation commands, use [Set Up Ubuntu for ROS 2](/reference/set-up-ubuntu-for-ros/). Windows users do that in WSL Ubuntu 24.04; Linux users can use their terminal; macOS users should use an Ubuntu 24.04 VM or remote Ubuntu computer.
 
-## Words You Should Know
-
-| Word | Meaning |
-| --- | --- |
-| Workspace | The folder that holds ROS 2 packages and is built by `colcon`. |
-| Package | The code, metadata, configuration, and assets for one part of a ROS project. |
-| Node | One running ROS program with a focused job. |
-| Topic | A named stream of messages between nodes. |
-| Parameter | A named setting supplied to a node, such as a GPIO pin or speed limit. |
-| Launch file | A Python file that starts the nodes that run together. |
-
-Start with [Creating your workspace](/guides/ros2-package-guide/workspace/).
+Start with [Create your workspace](/guides/ros2-package-guide/workspace/).
