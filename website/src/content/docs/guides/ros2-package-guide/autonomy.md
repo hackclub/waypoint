@@ -17,10 +17,12 @@ Install it on the computer that will drive the robot:
 sudo apt update
 sudo apt install -y ros-jazzy-teleop-twist-keyboard
 source /opt/ros/jazzy/setup.bash
-ros2 run teleop_twist_keyboard teleop_twist_keyboard
+ros2 run teleop_twist_keyboard teleop_twist_keyboard \
+  --ros-args \
+  -p key_timeout:=0.6
 ```
 
-You do not need to write a custom teleop node for your submission. If terminal key repeat feels bad on your system later, use the optional [event-based keyboard teleop extra](/extras/event-based-keyboard-teleop/) after standard teleop works.
+Terminal keyboard input depends on your terminal's key-repeat behavior. `key_timeout` stops a stale held command after keyboard input stops, and the motor node's watchdog remains the final safety fallback. You do not need to write a custom teleop node for your submission; if you want actual key-press and key-release events later, use the optional [event-based keyboard teleop extra](/extras/event-based-keyboard-teleop/) after standard teleop works.
 
 ## Design Your Autonomous Routine
 
@@ -135,6 +137,8 @@ def tick(self) -> None:
     self.publish_motion(linear_mps, angular_rad_s)
 ```
 
+When the routine is done, canceling the timer stops this node from sending new timed commands. The node itself stays in the ROS graph until the launch process stops, so after `Simple autonomous routine complete` appears, press `Ctrl+C` before starting teleop or running autonomy again. The final zero command and the motor watchdog still provide the movement stop.
+
 And the publisher method:
 
 ```python title="Autonomy Twist publisher"
@@ -171,15 +175,68 @@ OrphBot's `simple_auton.py` is useful for studying the timer-driven segment idea
 
 ## Launch Autonomy Separately
 
-Keep normal bringup and autonomy as separate commands unless you intentionally add a command arbiter. One safe pattern is:
+Keep normal bringup and autonomy as separate launch entry points unless you intentionally add a command arbiter. One safe pattern is:
 
 - `bringup.launch.py` starts motor, odometry, IMU, and fixed transforms
 - `auton.launch.py` includes bringup and then starts `simple_auton`
 - you do not run standard teleop at the same time as `simple_auton`
 
-Before running autonomy on the real robot, check publisher count:
+Create `cool_rover/launch/auton.launch.py`:
 
-```bash title="Ubuntu terminal"
+```python title="launch/auton.launch.py"
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.actions import Node
+import os
+
+
+def generate_launch_description():
+    package_share = get_package_share_directory('cool_rover')
+    bringup_launch = os.path.join(
+        package_share,
+        'launch',
+        'bringup.launch.py',
+    )
+    config_file = os.path.join(
+        package_share,
+        'config',
+        'robot.yaml',
+    )
+
+    return LaunchDescription([
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(bringup_launch),
+        ),
+        Node(
+            package='cool_rover',
+            executable='simple_auton',
+            name='simple_auton',
+            parameters=[config_file],
+            output='screen',
+        ),
+    ])
+```
+
+`IncludeLaunchDescription` starts another launch file from this one. `PythonLaunchDescriptionSource` tells ROS that the included file is a Python launch file. Including normal bringup keeps you from copying the motor, odometry, IMU, and transform nodes into a second file and accidentally letting the two launch files drift apart.
+
+Run autonomy with one launch command. Do not start `bringup.launch.py` separately first; `auton.launch.py` already includes it. Do not run keyboard teleop at the same time.
+
+```bash title="Raspberry Pi SSH terminal"
+WORKSPACE_NAME="cool_rover_ws"
+PACKAGE_NAME="cool_rover"
+
+cd ~/"$WORKSPACE_NAME"
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+
+ros2 launch "$PACKAGE_NAME" auton.launch.py
+```
+
+With `auton.launch.py` running, check publisher count from a second sourced terminal:
+
+```bash title="Second Raspberry Pi SSH terminal"
 ros2 topic info /cmd_vel --verbose
 ```
 
@@ -196,8 +253,9 @@ source /opt/ros/jazzy/setup.bash
 colcon build --symlink-install
 source install/setup.bash
 ros2 pkg executables "$PACKAGE_NAME"
+ros2 launch "$PACKAGE_NAME" auton.launch.py --show-args
 ```
 
-Expected result: the executable list includes `simple_auton`.
+Expected result: the executable list includes `simple_auton`, and ROS can find `auton.launch.py` from the installed package.
 
 With teleop compatibility and your autonomous node in place, finish with [Polishing your package](/guides/ros2-package-guide/polish/).

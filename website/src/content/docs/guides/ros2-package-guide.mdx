@@ -40,7 +40,7 @@ Teleop and autonomy both publish the same `Twist` message. Do not run them at th
 Open-loop odometry is an estimate based on commanded movement. Without wheel encoders, it cannot prove how far the robot physically moved, and drift is expected.
 :::
 
-## Three Phases
+## Two Phases
 
 **Phase A: Learn ROS 2 on the computer**
 
@@ -59,7 +59,7 @@ Use examples to answer a specific question, then write the version that fits you
 - Use [OrphBot's example package](https://github.com/SharKingStudios/orphbot-package) as the example Waypoint robot package. `setup.py` for `data_files` and `console_scripts`, `motor_driver.py` for watchdog cleanup structure, `odom_publisher.py` for nested message assignments, `mpu6050_node.py` for signed register reads, and `simple_auton.py` for timer-driven segments. *OrphBot's GPIO pins and tuning values are OrphBot-specific.*
 - [Terralift](https://github.com/SharKingStudios/Terralift) is a larger real robot. Its drivetrain, IMU, and open-loop odometry nodes show how the same ideas grow in a more complex project. (This is the real robot I used for my research project!)
 
-Do not rename an example package and submit it. Your submission must be your own!
+Do not rename an example package and submit it. Your submission must be your own! (I will check this...)
 
 ## Your Route
 

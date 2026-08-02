@@ -37,7 +37,7 @@ ROS uses the [REP 103](https://www.ros.org/reps/rep-0103.html) robot convention:
 
 You need one documented relationship from `base_link` to `imu_link`. You can provide it with a fixed transform in launch or with your robot description. Do not rotate the raw IMU axes in code and then publish the same mounting rotation again in TF.
 
-A simple fixed transform launch entry looks like this, but the numbers must come from your mounting:
+A simple fixed transform launch entry looks like this, but the numbers must come from your mounting. In `static_transform_publisher`, `base_link` is the parent frame and `imu_link` is the child frame. The `x`, `y`, and `z` translations are in meters; `roll`, `pitch`, and `yaw` are in radians. Convert CAD dimensions from millimeters to meters, and convert measured angles from degrees to radians.
 
 ```python title="launch fixed IMU transform pattern"
 Node(
@@ -55,6 +55,8 @@ Node(
 ## Read Signed MPU6050 Values
 
 The MPU6050 stores each axis as two bytes: a high byte and a low byte. Combine them into one 16-bit number, then convert from unsigned to signed two's-complement form.
+
+The official TDK InvenSense [MPU-6000/MPU-6050 register map](https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Register-Map1.pdf) is the source for the register names, reset defaults, and sensitivity numbers used here. You do not need to read the whole document; locate `WHO_AM_I`, `PWR_MGMT_1`, the accelerometer output registers, the gyroscope output registers, the reset-default accelerometer and gyroscope ranges, and the sensitivity values for +/-2 g and +/-250 deg/s.
 
 This helper belongs inside `MPU6050Node` at the same indentation level as `publish_sample()`.
 
@@ -382,7 +384,7 @@ By the time you leave this page, normal `bringup.launch.py` should start the req
 - `imu_node`
 - one static `base_link -> imu_link` transform using your measured IMU mounting
 
-If your earlier launch file still has only the three nodes, insert the static-transform node into the same `LaunchDescription` list. The numbers below are examples; replace them with your measured mounting translation and rotation.
+If your earlier launch file still has only the three nodes, insert the static-transform node into the same `LaunchDescription` list. The numbers below are examples; replace them with your measured mounting translation and rotation. Keep this as one frame relationship: do not also add a URDF transform for the same `base_link -> imu_link` pair.
 
 ```python title="launch/bringup.launch.py required nodes"
 return LaunchDescription([

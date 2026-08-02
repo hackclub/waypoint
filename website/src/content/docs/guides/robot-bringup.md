@@ -90,7 +90,7 @@ Your bringup launch file should start the nodes you made.
 - your `open_loop_odom` node
 - `robot_state_publisher` only if you completed the optional robot-model polish
 
-I would keep the initial motor-output limit low and quick to override from the launch command.
+Keep the initial motor-output limit low in `config/robot.yaml`. Edit `max_output`, rebuild if your installed config needs it, launch the package, then verify the loaded value from the second terminal with `ros2 param get /motor_driver max_output`.
 
 ```bash title="Raspberry Pi SSH terminal"
 ros2 launch "$PACKAGE_NAME" bringup.launch.py
@@ -294,10 +294,12 @@ sudo apt install -y ros-jazzy-teleop-twist-keyboard
 source /opt/ros/jazzy/setup.bash
 export ROS_DOMAIN_ID="$ROS_DOMAIN_ID_VALUE"
 export ROS_LOCALHOST_ONLY=0
-ros2 run teleop_twist_keyboard teleop_twist_keyboard
+ros2 run teleop_twist_keyboard teleop_twist_keyboard \
+  --ros-args \
+  -p key_timeout:=0.6
 ```
 
-Watch `/cmd_vel` in another terminal. Confirm that releasing the key stops publishing movement or sends zero movement, and confirm the robot-side watchdog still stops the motors if teleop exits unexpectedly.
+Watch `/cmd_vel` in another terminal. Terminal keyboard input depends on the terminal's key-repeat behavior; `key_timeout` stops a stale held command after keyboard input stops, and the robot-side watchdog still stops the motors if teleop exits unexpectedly.
 
 ```bash title="Second computer Ubuntu terminal"
 ROS_DOMAIN_ID_VALUE=37
@@ -308,15 +310,26 @@ ros2 topic info /cmd_vel --verbose
 ros2 topic echo /cmd_vel
 ```
 
-Move to floor driving only after stand checks pass. Start with low speed limits and enough open space to cut power without chasing the robot. If standard terminal teleop works but feels awkward on your system, the optional [event-based keyboard teleop extra](/extras/event-based-keyboard-teleop/) can be added later.
+Move to floor driving only after stand checks pass. Start with low speed limits and enough open space to cut power without chasing the robot. If standard terminal teleop works but feels awkward on your system, the optional [event-based keyboard teleop extra](/extras/event-based-keyboard-teleop/) provides actual key-press and key-release events and can be added later.
 
 ## 14. Run Autonomy Last
 
-Only after manual movement, IMU, odometry, TF, and RViz all behave individually should you start the autonomous node you wrote. Begin with low speeds and a short routine. Watch the robot and `/cmd_vel`; stop immediately if its real behavior differs from your planned table.
+Only after manual movement, IMU, odometry, TF, and RViz all behave individually should you run the autonomy launch file. Begin with low speeds and a short routine. Watch the robot and `/cmd_vel`; stop immediately if its real behavior differs from your planned table. Do not start `bringup.launch.py` separately first; `auton.launch.py` already includes it.
 
-Before autonomy starts, check publisher count from a sourced terminal:
+```bash title="Raspberry Pi SSH terminal"
+WORKSPACE_NAME="cool_rover_ws"
+PACKAGE_NAME="cool_rover"
 
-```bash title="Computer Ubuntu terminal"
+cd ~/"$WORKSPACE_NAME"
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
+
+ros2 launch "$PACKAGE_NAME" auton.launch.py
+```
+
+With autonomy running, check publisher count from a second sourced terminal:
+
+```bash title="Second Raspberry Pi SSH terminal"
 ros2 topic info /cmd_vel --verbose
 ```
 
@@ -327,6 +340,8 @@ Teleop and autonomy should not publish at the same time unless you deliberately 
 - `Ctrl+C` or node shutdown sends zero
 - the robot-side watchdog stops the motors if autonomy stops publishing
 - the routine ends with zero output
+
+After `Simple autonomous routine complete` appears, press `Ctrl+C` in the launch terminal. That removes the finished `simple_auton` node from the ROS graph and prevents it from remaining as a second `/cmd_vel` publisher when teleop is started later.
 
 When this is working, document the command sequence, hardware pins, IMU orientation, network settings, and a short video in your README. That helps someone understand what you built and how you brought it to life!
 

@@ -34,7 +34,7 @@ export default defineConfig({
 				{
 					label: 'ROS 2 Package Guide',
 					items: [
-						{ label: 'Start here', slug: 'guides/ros2-package-guide' },
+						{ label: 'ROS 2 Start Here', slug: 'guides/ros2-package-guide' },
 						{ label: 'Learn the ROS 2 basics', slug: 'guides/ros2-package-guide/fundamentals' },
 						{ label: 'Create your workspace', slug: 'guides/ros2-package-guide/workspace' },
 						{ label: 'Understand messages, parameters, and launch files', slug: 'guides/ros2-package-guide/messages-and-launch' },
@@ -44,6 +44,7 @@ export default defineConfig({
 						{ label: 'Polish your package', slug: 'guides/ros2-package-guide/polish' },
 					],
 				},
+				{ label: 'Submission Requirements', slug: 'guides/submission-requirements' },
 				{ label: 'IRL Guide', slug: 'guides/robot-bringup' },
 				{
 					label: 'Reference',

@@ -166,7 +166,29 @@ You can take a guess on `approximate_max_wheel_speed_mps` for early stand tests.
 
 Many small DRV8833 boards use two input pins per motor channel. One pin receives PWM for forward, the other receives PWM for reverse. GPIO is a signal source, not motor power; the motor power comes from the motor battery through the driver.
 
-This channel helper is a common pattern for that wiring:
+This channel helper is a common pattern for that wiring. Place `MotorChannel` above `MotorDriver`, because `MotorDriver.make_channel()` creates `MotorChannel` objects later.
+
+```text title="motor_driver.py layout"
+motor_driver.py
+|-- imports
+|-- class MotorChannel
+|   |-- __init__
+|   |-- set_output
+|   `-- close
+|-- class MotorDriver
+|   |-- __init__
+|   |-- parameter helpers
+|   |-- make_channel
+|   |-- command-conversion helpers
+|   |-- cmd_vel_callback
+|   |-- set_sides
+|   |-- stop_motors
+|   |-- watchdog_tick
+|   `-- destroy_node
+`-- main
+```
+
+All methods that use `self` after the class starter belong inside `MotorDriver`, except `main`. `main` stays at file level after both classes.
 
 ```python title="Two-pin motor channel pattern"
 class MotorChannel:
@@ -489,15 +511,19 @@ The next three snippets are still inside `tick()`, after `stamp` and the quatern
     odom.pose.pose.orientation.w = qw
     odom.twist.twist.linear.x = self.linear_mps
     odom.twist.twist.angular.z = self.angular_rad_s
+    large_unknown_variance = 1e6
     odom.pose.covariance[0] = 0.08
     odom.pose.covariance[7] = 0.08
     odom.pose.covariance[35] = 0.25
     odom.twist.covariance[0] = 0.12
     odom.twist.covariance[35] = 0.35
+    for index in (14, 21, 28):
+        odom.pose.covariance[index] = large_unknown_variance
+        odom.twist.covariance[index] = large_unknown_variance
     self.odom_pub.publish(odom)
 ```
 
-Covariance values are estimates of uncertainty. Do not fill them with zeros to imply perfect certainty.
+The 6-by-6 covariance diagonal order is `x, y, z, roll, pitch, yaw`. That makes `covariance[14]`, `covariance[21]`, and `covariance[28]` the diagonal slots for `z`, `roll`, and `pitch`. Covariance values are estimates of uncertainty, not measured calibration. The large placeholder variance says this planar robot's `z`, `roll`, and `pitch` estimates should not be trusted. Do not fill them with zeros to imply perfect certainty, and do not use the IMU `-1` unavailable convention here; that convention does not apply to `Odometry`.
 
 ## Broadcast TF
 
