@@ -37,7 +37,7 @@ export default defineConfig({
 						{ label: 'ROS 2 Start Here', slug: 'guides/ros2-package-guide' },
 						{ label: 'Learn the ROS 2 basics', slug: 'guides/ros2-package-guide/fundamentals' },
 						{ label: 'Create your workspace', slug: 'guides/ros2-package-guide/workspace' },
-						{ label: 'Understand messages, parameters, and launch files', slug: 'guides/ros2-package-guide/messages-and-launch' },
+						{ label: 'Understand messages, parameters, and launch', slug: 'guides/ros2-package-guide/messages-and-launch' },
 						{ label: 'Build movement nodes', slug: 'guides/ros2-package-guide/driving' },
 						{ label: 'Publish IMU data', slug: 'guides/ros2-package-guide/imu' },
 						{ label: 'Add teleop and autonomy', slug: 'guides/ros2-package-guide/autonomy' },

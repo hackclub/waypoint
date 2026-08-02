@@ -11,7 +11,7 @@ The official Waypoint submission checklist is still being finalized. This page i
 
 While the official checklist is still in progress, these examples can help you make your repository easier to read:
 
-- [OrphBot package README](https://github.com/hackclub/waypoint/tree/main/extras/Orphbot) is an example of a readable robot README with hardware tables, setup instructions, run commands, and troubleshooting.
+- [OrphBot package README](https://github.com/hackclub/waypoint/tree/main/extras/Orphbot) is an example of a readable robot README.
 - [Hackpad submitting guide](https://hackpad.hackclub.com/submitting) is useful as an example of organizing a repository and presenting project files.
 
 Neither page defines the final Waypoint requirements. Do not assume every Hackpad or OrphBot section will be mandatory for Waypoint.

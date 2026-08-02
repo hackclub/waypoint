@@ -50,11 +50,21 @@ const SHARE_IMAGE_URL = new URL(IMAGES.starHero, SITE_URL).toString();
         --hero-progress: 0;
         --hero-offset: 0px;
         --hero-text-parallax: 0px;
-        --hero-art-parallax: 0px;
+        --hero-art-start-parallax: 3.6vh;
+        --hero-art-parallax: var(--hero-art-start-parallax);
         --scroll-cue-opacity: 1;
         --hero-viewport: 100vh;
         --hero-overlap: 80vh;
         --hero-art-top: 0rem;
+        --hero-art-left: 50%;
+        --hero-art-translate-x: -50%;
+        --hero-mobile-art-top: clamp(10.5rem, 25vh, 14rem);
+        --hero-mobile-art-width: 940px;
+        --hero-mobile-art-height: 528.75px;
+        /* 1580px viewport * 118vw artwork width * 9 / 16. */
+        --hero-desktop-reference-art-height: 1048.725px;
+        --hero-desktop-art-height: 66.375vw;
+        --hero-art-ground-offset: 0px;
         --hero-heidi-x: 11.05%;
         --hero-heidi-y: 30.97%;
         --hero-heidi-width: 47.62%;
@@ -63,10 +73,23 @@ const SHARE_IMAGE_URL = new URL(IMAGES.starHero, SITE_URL).toString();
         --hero-robot-width: 15.78%;
       }
 
-      @supports (height: 100svh) {
+      @supports (height: 100dvh) {
         :root {
-          --hero-viewport: 100svh;
-          --hero-overlap: 80svh;
+          --hero-viewport: 100dvh;
+          --hero-overlap: 80dvh;
+          --hero-art-start-parallax: 3.6dvh;
+          --hero-mobile-art-top: clamp(10.5rem, 25dvh, 14rem);
+        }
+      }
+
+      @supports not (height: 100dvh) {
+        @supports (height: 100svh) {
+          :root {
+            --hero-viewport: 100svh;
+            --hero-overlap: 80svh;
+            --hero-art-start-parallax: 3.6svh;
+            --hero-mobile-art-top: clamp(10.5rem, 25svh, 14rem);
+          }
         }
       }
 
@@ -199,11 +222,12 @@ const SHARE_IMAGE_URL = new URL(IMAGES.starHero, SITE_URL).toString();
       .hero-art {
         position: absolute;
         top: var(--hero-art-top);
-        left: 50%;
+        bottom: auto;
+        left: var(--hero-art-left);
         z-index: 1;
         width: max(980px, 118vw);
         aspect-ratio: 16 / 9;
-        transform: translate3d(-50%, var(--hero-art-parallax), 0);
+        transform: translate3d(var(--hero-art-translate-x), var(--hero-art-parallax), 0);
         will-change: transform;
         pointer-events: none;
         user-select: none;
@@ -494,10 +518,6 @@ const SHARE_IMAGE_URL = new URL(IMAGES.starHero, SITE_URL).toString();
       }
 
       @media (max-width: 720px) {
-        .hero-inner {
-          padding-top: 8.4rem;
-        }
-
         .hero-figure {
           width: 100vw;
           width: 100dvw;
@@ -506,8 +526,10 @@ const SHARE_IMAGE_URL = new URL(IMAGES.starHero, SITE_URL).toString();
         }
 
         .hero-art {
-          --hero-art-top: 10.5rem;
-          width: clamp(760px, 150vw, 940px);
+          --hero-art-top: var(--hero-mobile-art-top);
+          --hero-art-left: 24%;
+          --hero-art-translate-x: -36.4%;
+          width: var(--hero-mobile-art-width);
         }
 
         .content {
@@ -523,6 +545,33 @@ const SHARE_IMAGE_URL = new URL(IMAGES.starHero, SITE_URL).toString();
         .step {
           grid-template-columns: 1fr;
           gap: 0.4rem;
+        }
+      }
+
+      @media (min-width: 1281px) {
+        .hero-art {
+          --hero-art-top: min(0px, calc(var(--hero-desktop-reference-art-height) - var(--hero-desktop-art-height)));
+        }
+      }
+
+      @media (max-width: 1280px) {
+        .hero-art {
+          top: auto;
+          bottom: calc(var(--hero-viewport) - var(--hero-mobile-art-height) - var(--hero-mobile-art-top) - var(--hero-art-ground-offset));
+        }
+      }
+
+      @media (min-width: 721px) and (max-width: 1280px) {
+        .hero-art {
+          --hero-art-ground-offset: 8vh;
+        }
+      }
+
+      @supports (height: 100dvh) {
+        @media (min-width: 721px) and (max-width: 1280px) {
+          .hero-art {
+            --hero-art-ground-offset: 8dvh;
+          }
         }
       }
 
@@ -553,7 +602,7 @@ const SHARE_IMAGE_URL = new URL(IMAGES.starHero, SITE_URL).toString();
         }
 
         .hero-art {
-          transform: translate3d(-50%, 0, 0);
+          transform: translate3d(var(--hero-art-translate-x), 0, 0);
         }
       }
     </style>
@@ -696,6 +745,7 @@ const SHARE_IMAGE_URL = new URL(IMAGES.starHero, SITE_URL).toString();
 
     <script is:inline>
       const hero = document.querySelector('[data-hero]');
+      const heroSticky = hero?.querySelector('.hero-sticky');
       const scrollCue = document.querySelector('.scroll-cue');
       const root = document.documentElement;
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -708,17 +758,44 @@ const SHARE_IMAGE_URL = new URL(IMAGES.starHero, SITE_URL).toString();
       let currentArtParallax = 0;
       let targetScrollCueOpacity = 1;
       let currentScrollCueOpacity = 1;
+      const HERO_OFFSET_DISTANCE = 40;
+      const HERO_ART_PARALLAX_RATE = 0.045;
+
       let rafId = 0;
+      let measureRafId = 0;
       let scrollTweenId = 0;
+
+      const getHeroViewportHeight = () => {
+        const stickyHeight = heroSticky instanceof HTMLElement ? heroSticky.getBoundingClientRect().height : 0;
+        return stickyHeight || document.documentElement.clientHeight || window.innerHeight || 1;
+      };
 
       const measureTargets = () => {
         if (!hero) return;
         const rect = hero.getBoundingClientRect();
-        const total = hero.offsetHeight - window.innerHeight;
-        targetProgress = Math.max(0, Math.min(1, -rect.top / Math.max(total, 1)));
+        const total = Math.max(hero.offsetHeight - getHeroViewportHeight(), 1);
+        const heroScroll = Math.max(0, Math.min(total, -rect.top));
+        targetProgress = heroScroll / total;
         targetTextParallax = -window.scrollY * 0.12;
-        targetArtParallax = -window.scrollY * 0.045;
+        targetArtParallax =
+          targetProgress * HERO_OFFSET_DISTANCE + (total - heroScroll) * HERO_ART_PARALLAX_RATE;
         targetScrollCueOpacity = Math.max(0, Math.min(1, 1 - targetProgress * 5));
+      };
+
+      const applyHeroStyles = () => {
+        root.style.setProperty('--hero-progress', currentProgress.toFixed(4));
+        root.style.setProperty('--hero-offset', `${(currentProgress * -HERO_OFFSET_DISTANCE).toFixed(2)}px`);
+        root.style.setProperty('--hero-text-parallax', `${currentTextParallax.toFixed(2)}px`);
+        root.style.setProperty('--hero-art-parallax', `${currentArtParallax.toFixed(2)}px`);
+        root.style.setProperty('--scroll-cue-opacity', currentScrollCueOpacity.toFixed(3));
+      };
+
+      const syncCurrentToTargets = () => {
+        currentProgress = targetProgress;
+        currentTextParallax = targetTextParallax;
+        currentArtParallax = targetArtParallax;
+        currentScrollCueOpacity = targetScrollCueOpacity;
+        applyHeroStyles();
       };
 
       const render = () => {
@@ -733,11 +810,7 @@ const SHARE_IMAGE_URL = new URL(IMAGES.starHero, SITE_URL).toString();
         if (Math.abs(targetArtParallax - currentArtParallax) < 0.1) currentArtParallax = targetArtParallax;
         if (Math.abs(targetScrollCueOpacity - currentScrollCueOpacity) < 0.01) currentScrollCueOpacity = targetScrollCueOpacity;
 
-        root.style.setProperty('--hero-progress', currentProgress.toFixed(4));
-        root.style.setProperty('--hero-offset', `${(currentProgress * -40).toFixed(2)}px`);
-        root.style.setProperty('--hero-text-parallax', `${currentTextParallax.toFixed(2)}px`);
-        root.style.setProperty('--hero-art-parallax', `${currentArtParallax.toFixed(2)}px`);
-        root.style.setProperty('--scroll-cue-opacity', currentScrollCueOpacity.toFixed(3));
+        applyHeroStyles();
         if (
           currentProgress !== targetProgress ||
           currentTextParallax !== targetTextParallax ||
@@ -751,13 +824,22 @@ const SHARE_IMAGE_URL = new URL(IMAGES.starHero, SITE_URL).toString();
       };
 
       const scheduleRender = () => {
-        measureTargets();
-        if (!rafId) rafId = window.requestAnimationFrame(render);
+        if (measureRafId) return;
+        measureRafId = window.requestAnimationFrame(() => {
+          measureRafId = 0;
+          measureTargets();
+          if (!rafId) rafId = window.requestAnimationFrame(render);
+        });
       };
 
-      scheduleRender();
+      measureTargets();
+      syncCurrentToTargets();
       window.addEventListener('scroll', scheduleRender, { passive: true });
       window.addEventListener('resize', scheduleRender);
+      window.addEventListener('orientationchange', scheduleRender);
+      window.visualViewport?.addEventListener('resize', scheduleRender, { passive: true });
+      const heroResizeObserver = heroSticky instanceof Element && 'ResizeObserver' in window ? new ResizeObserver(scheduleRender) : null;
+      heroResizeObserver?.observe(heroSticky);
 
       const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
 
@@ -766,7 +848,7 @@ const SHARE_IMAGE_URL = new URL(IMAGES.starHero, SITE_URL).toString();
 
         const scroller = document.scrollingElement || document.documentElement;
         const start = scroller.scrollTop;
-        const maxScroll = scroller.scrollHeight - window.innerHeight;
+        const maxScroll = scroller.scrollHeight - getHeroViewportHeight();
         const targetTop = Math.max(0, Math.min(maxScroll, target.getBoundingClientRect().top + window.scrollY));
         const distance = targetTop - start;
         const duration = prefersReducedMotion ? 420 : 1000;

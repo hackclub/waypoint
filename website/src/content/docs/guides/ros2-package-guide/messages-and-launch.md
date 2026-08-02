@@ -207,6 +207,8 @@ ros2 launch "$PACKAGE_NAME" bringup.launch.py --show-args
 
 Expected result: ROS finds the launch file from `install/`. You may still see runtime errors if hardware nodes are not ready for your computer yet; that is different from launch-file discovery.
 
-Do not add a static `map -> odom` transform for this project. The local odometry frame is `odom`.
+:::tip[Tip]
+The local odometry frame here is `odom`.
+:::
 
 Next: [Build movement nodes](/guides/ros2-package-guide/driving/).
