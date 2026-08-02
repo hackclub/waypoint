@@ -8,6 +8,9 @@
   --gold: #f0b323;
   --red: #d84b3a;
 
+  color-scheme: dark !important;
+  scrollbar-color: color-mix(in srgb, var(--ink) 32%, var(--bg)) var(--bg) !important;
+
   --sl-font: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --sl-font-system: var(--sl-font);
 
@@ -435,6 +438,27 @@ h6,
 .sidebar-pane a,
 .right-sidebar-panel a {
   border-radius: 0 !important;
+}
+
+.sidebar-pane,
+.right-sidebar,
+.right-sidebar-panel,
+#starlight__mobile-toc .dropdown,
+mobile-starlight-toc .dropdown {
+  -ms-overflow-style: none !important;
+  scrollbar-color: transparent transparent !important;
+  scrollbar-gutter: auto !important;
+  scrollbar-width: none !important;
+}
+
+.sidebar-pane::-webkit-scrollbar,
+.right-sidebar::-webkit-scrollbar,
+.right-sidebar-panel::-webkit-scrollbar,
+#starlight__mobile-toc .dropdown::-webkit-scrollbar,
+mobile-starlight-toc .dropdown::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .sidebar-pane [aria-current='page'] {
