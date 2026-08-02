@@ -4,9 +4,17 @@ Orphbot is a 4 wheeled robot with a small lifter on its front. It runs ROS 2 and
 
 It serves as an example for the [Waypoint YSWS](https://www.waypoint.hackclub.com), since it implements every component that comes in the kit.
 
+## Renders
+*These are optional for submission, but make your design look way cooler!*
+
+![Orphbot Front](./Renders/Orphbot%20Front.png)
+![Orphbot Top](./Renders/Orphbot%20Top.png)
+![Orphbot Side](./Renders/Orphbot%20Side.png)
+![Orphbot Back](./Renders/Orphbot%20Back.png)
+
 ## Features:
 
-* Top Sanded Acrylic Plate
+* A dual color top design
 * 128x64 OLED Display
 * A 9v Battery
 * 6 SK6812 MINI E LEDs
@@ -15,11 +23,11 @@ It serves as an example for the [Waypoint YSWS](https://www.waypoint.hackclub.co
 
 ## CAD:
 
-Everything fits together using 8 M3 Bolts and heatset inserts. Two for the PCB and four for the case.
+Everything fits together using 8 M3 Bolts and heatset inserts. Two for the PCB and six for the case.
 
-It has 3 separate 3D printed parts. The main body, as well as 2 side parts to better hide the wheels. It also has 1 main acrylic top plate, which gets sanded to make opaque.
+It has 5 separate 3D printed parts. The main chassis is made up of the lower unibody and top plate, but the design also includes a separate battery cover for easier access as well as a button cover and forks to attach a servo.
 
-(Picture goes here whenever I finish CAD)
+![OrphBot CAD](./Renders/Orphbot%20CAD.png)
 
 ## PCB:
 
@@ -33,7 +41,7 @@ Heres what the PCB looks like! It was made in KiCAD.
 
 ## Firmware:
 
-This robot uses ROS2! Its package is inside the repo under the [Firmware](Firmware/) folder.
+This robot uses ROS2! Its package lives in the linked [Firmware](Firmware/) folder, which points to [SharKingStudios/orphbot-package](https://github.com/SharKingStudios/orphbot-package).
 
 * It can connect and display its information to RViz
 * It connects to an Xbox controller for control

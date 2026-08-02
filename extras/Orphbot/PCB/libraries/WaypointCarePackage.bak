@@ -1109,8 +1109,8 @@
 				)
 			)
 		)
-		(property "Value" ""
-			(at 0 0 0)
+		(property "Value" "SK6812 MINI E"
+			(at 7.62 6.35 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -1260,7 +1260,7 @@
 			)
 		)
 		(symbol "SK6812_MINI_E_CORRECTED_1_1"
-			(text "SK6812 MINI E"
+			(text ""
 				(at 7.62 6.35 0)
 				(effects
 					(font

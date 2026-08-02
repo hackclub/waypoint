@@ -4,7 +4,7 @@ import starlight from '@astrojs/starlight';
 import { SITE_LOADER_CSS, SITE_LOADER_SCRIPT } from './src/lib/site-loader.mjs';
 
 // https://astro.build/config
-const site = process.env.SITE_URL ?? 'https://waypoint.loganpeterson.org';
+const site = process.env.SITE_URL ?? 'https://waypoint.hackclub.org';
 
 export default defineConfig({
 	site,
