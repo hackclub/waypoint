@@ -20,6 +20,7 @@ export default defineConfig({
 				{ tag: 'script', content: SITE_LOADER_SCRIPT },
 			],
 			components: {
+				Head: './src/components/Head.astro',
 				ThemeSelect: './src/components/Empty.astro',
 				SocialIcons: './src/components/DocsSocialIcons.astro',
 			},

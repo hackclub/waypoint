@@ -4,6 +4,7 @@ import Button from '../components/Button.astro';
 import BlueprintBackground from '../components/BlueprintBackground.astro';
 import { SITE_LOADER_CSS, SITE_LOADER_SCRIPT } from '../lib/site-loader.mjs';
 import { IMAGES, LINKS } from '../config';
+import SpeedInsights from '@vercel/speed-insights/astro';
 
 const GUIDES_URL = LINKS.guides;
 const SITE_URL = 'https://waypoint.hackclub.com/';
@@ -38,6 +39,7 @@ const SHARE_IMAGE_URL = new URL(IMAGES.starHero, SITE_URL).toString();
     <meta name="twitter:image" content={SHARE_IMAGE_URL} />
     <style set:html={SITE_LOADER_CSS}></style>
     <script set:html={SITE_LOADER_SCRIPT}></script>
+    <SpeedInsights />
 
     <style is:global>
       @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
