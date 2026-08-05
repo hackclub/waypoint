@@ -36,13 +36,13 @@ YourProject/
 
 Keep this exact folder structure so the included 3D models resolve.
 
-![Project folder with the WaypointCarePackage files in a libraries folder](/images/reference/kicad-library-import/step2.png)
+![Project folder with the WaypointCarePackage files in a libraries folder](../../../assets/reference/kicad-library-import/step2.png)
 
 ## 3. Open the project in KiCad 10.0
 
 Launch KiCad 10.0 and open the project's `.kicad_pro` file.
 
-![KiCad project open in the Project Manager](/images/reference/kicad-library-import/step3.png)
+![KiCad project open in the Project Manager](../../../assets/reference/kicad-library-import/step3.png)
 
 ## 4. Add the symbol library
 
@@ -68,7 +68,7 @@ ${KIPRJMOD}/libraries/WaypointCarePackage.kicad_sym
 
 Click **OK** or **Apply**.
 
-![WaypointCarePackage symbol library added to Project Specific Libraries](/images/reference/kicad-library-import/step4.png)
+![WaypointCarePackage symbol library added to Project Specific Libraries](../../../assets/reference/kicad-library-import/step4.png)
 
 ## 5. Add the footprint library
 
@@ -94,7 +94,7 @@ ${KIPRJMOD}/libraries/WaypointCarePackage.pretty
 
 Click **OK** or **Apply**.
 
-![WaypointCarePackage footprint library added to Project Specific Libraries](/images/reference/kicad-library-import/step5.png)
+![WaypointCarePackage footprint library added to Project Specific Libraries](../../../assets/reference/kicad-library-import/step5.png)
 
 You can now use the `WaypointCarePackage` libraries inside your schematic and PCB layout.
 

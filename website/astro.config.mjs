@@ -5,10 +5,46 @@ import { SITE_LOADER_CSS, SITE_LOADER_SCRIPT } from './src/lib/site-loader.mjs';
 
 // https://astro.build/config
 const site = process.env.SITE_URL ?? 'https://waypoint.hackclub.org';
+const guideMediaMarkdown = {
+	name: 'waypoint-lazy-guide-media',
+	hooks: {
+		'astro:config:setup': ({ config }) => {
+			if (config.markdown.processor.name !== 'satteri') {
+				throw new Error("Waypoint guide-media processing requires Astro's default Satteri processor.");
+			}
 
+			config.markdown.processor.options.hastPlugins.push(() => ({
+				name: 'waypoint-lazy-guide-images',
+				element: {
+					filter: ['img'],
+					visit(node, ctx) {
+						if (!ctx.fileURL?.pathname.replaceAll('\\', '/').includes('/src/content/docs/guides/')) return;
+
+						const properties = (node.properties ??= {});
+						const classNames = Array.isArray(properties.className)
+							? properties.className
+							: String(properties.className ?? '').split(/\s+/);
+						const eager =
+							Object.hasOwn(properties, 'dataLoadEager') ||
+							Object.hasOwn(properties, 'data-load-eager') ||
+							properties.loading === 'eager' ||
+							classNames.includes('load-eager');
+
+						if (properties.decoding == null) ctx.setProperty(node, 'decoding', 'async');
+						if (properties.dataLoadWatch == null) ctx.setProperty(node, 'data-load-watch', '');
+						if (eager) return;
+						if (properties.loading == null) ctx.setProperty(node, 'loading', 'lazy');
+						if (properties.fetchPriority == null) ctx.setProperty(node, 'fetchpriority', 'low');
+					},
+				},
+			}));
+		},
+	},
+};
 export default defineConfig({
 	site,
 	output: 'static',
+	prefetch: { prefetchAll: false },
 	integrations: [
 		starlight({
 			title: 'Waypoint',
@@ -18,6 +54,29 @@ export default defineConfig({
 			head: [
 				{ tag: 'style', content: SITE_LOADER_CSS },
 				{ tag: 'script', content: SITE_LOADER_SCRIPT },
+				{
+					tag: 'link',
+					attrs: {
+						rel: 'preload',
+						href: '/fonts/ibm-plex-mono-400-latin.woff2',
+						as: 'font',
+						type: 'font/woff2',
+						crossorigin: 'anonymous',
+					},
+				},
+
+				{
+					tag: 'link',
+					attrs: {
+						rel: 'preload',
+						href: '/fonts/press-start-2p-400-latin.woff2',
+						as: 'font',
+						type: 'font/woff2',
+						crossorigin: 'anonymous',
+					},
+				},
+				{ tag: 'link', attrs: { rel: 'stylesheet', href: '/fonts.css' } },
+
 			],
 			components: {
 				ThemeSelect: './src/components/Empty.astro',
@@ -59,5 +118,6 @@ export default defineConfig({
 				},
 			],
 		}),
+		guideMediaMarkdown,
 	],
 });

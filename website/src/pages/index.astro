@@ -2,6 +2,10 @@
 import Navigation from '../components/Navigation.astro';
 import Button from '../components/Button.astro';
 import BlueprintBackground from '../components/BlueprintBackground.astro';
+import { Image } from 'astro:assets';
+import heroBackground from '../assets/waypoint/hero-background.png';
+import heroHeidi from '../assets/waypoint/hero-heidi.png';
+import heroRobot from '../assets/waypoint/hero-robot.png';
 import { SITE_LOADER_CSS, SITE_LOADER_SCRIPT } from '../lib/site-loader.mjs';
 import { IMAGES, LINKS } from '../config';
 
@@ -38,10 +42,11 @@ const SHARE_IMAGE_URL = new URL(IMAGES.starHero, SITE_URL).toString();
     <meta name="twitter:image" content={SHARE_IMAGE_URL} />
     <style set:html={SITE_LOADER_CSS}></style>
     <script set:html={SITE_LOADER_SCRIPT}></script>
+    <link rel="preload" href="/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/press-start-2p-400-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/fonts.css" />
 
     <style is:global>
-      @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
-
       :root {
         --bg: #141414;
         --ink: #f2e5b7;
@@ -623,9 +628,9 @@ const SHARE_IMAGE_URL = new URL(IMAGES.starHero, SITE_URL).toString();
             <div class="hero-inner">
               <div class="hero-figure" aria-hidden="true">
                 <div class="hero-art">
-                  <img class="hero-art__layer hero-art__layer--background" src={IMAGES.heroBackground} alt="" />
-                  <img class="hero-art__layer hero-art__layer--heidi" src={IMAGES.heroHeidi} alt="" />
-                  <img class="hero-art__layer hero-art__layer--robot" src={IMAGES.heroRobot} alt="" />
+                  <Image class="hero-art__layer hero-art__layer--background" src={heroBackground} format="webp" loading="eager" decoding="async" alt="" />
+                  <Image class="hero-art__layer hero-art__layer--heidi" src={heroHeidi} format="webp" loading="eager" decoding="async" alt="" />
+                  <Image class="hero-art__layer hero-art__layer--robot" src={heroRobot} format="webp" loading="eager" decoding="async" alt="" />
                 </div>
 
                 <div class="hero-copy">
