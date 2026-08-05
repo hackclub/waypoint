@@ -81,6 +81,7 @@ function bootLoader(media) {
   const timers = [];
   const windowListeners = new Map();
   const window = {
+    location: { pathname: '/guides/first-steps/' },
     addEventListener(type, listener) {
       windowListeners.set(type, listener);
     },
@@ -137,6 +138,8 @@ test('production guide output contains native lazy WebP media without changing c
   assert.match(guideHtml, /<img(?=[^>]*src="\/_astro\/schematic-editor\.[^"]+\.webp")(?=[^>]*decoding="async")(?=[^>]*data-load-watch="")(?=[^>]*loading="lazy")(?=[^>]*fetchpriority="low")[^>]*>/);
   assert.doesNotMatch(guideHtml, /\/images\/(guides|reference)\//);
   assert.match(guideHtml, /<img src="\/OrpheusFlag\.svg" alt="Hack Club flag" class="astro-ja4phbpo">/);
+  assert.equal([...guideHtml.matchAll(/data:image\/png;base64,/g)].length, 1);
+  assert.doesNotMatch(guideHtml, /vercel-speed-insights/);
   assert.match(config, /dataLoadEager/);
   assert.match(config, /if \(eager\) return;/);
 });
@@ -152,6 +155,7 @@ test('self-hosts the used fonts and optimizes homepage art to WebP', () => {
   assert.match(homeHtml, /hero-background\.[^"]+\.webp/);
   assert.match(homeHtml, /hero-heidi\.[^"]+\.webp/);
   assert.match(homeHtml, /hero-robot\.[^"]+\.webp/);
+  assert.match(homeHtml, /vercel-speed-insights/);
   assert.match(fontCss, /ibm-plex-mono-400-latin\.woff2/);
   assert.match(fontCss, /ibm-plex-mono-600-latin\.woff2/);
   assert.match(fontCss, /press-start-2p-400-latin\.woff2/);
@@ -160,6 +164,7 @@ test('self-hosts the used fonts and optimizes homepage art to WebP', () => {
 test('the loader star is inlined and the global media observer is absent', () => {
   assert.match(SITE_LOADER_CSS, /data:image\/png;base64,/);
   assert.doesNotMatch(SITE_LOADER_CSS, /url\('\/images\/waypoint\/waypoint-star\.png'\)/);
-  assert.match(SITE_LOADER_SCRIPT, /pageLoaderMaxMs = 1500/);
+  assert.match(SITE_LOADER_SCRIPT, /isHomepage \? 2800 : 1500/);
+  assert.match(SITE_LOADER_SCRIPT, /Press Start 2P/);
   assert.doesNotMatch(SITE_LOADER_SCRIPT, /MutationObserver/);
 });

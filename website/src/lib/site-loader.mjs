@@ -7,6 +7,7 @@ export const SITE_LOADER_CSS = `
   --site-loader-border: rgba(242, 229, 183, 0.16);
   --site-loader-star-size: clamp(4rem, 8vw, 6.5rem);
   --site-loader-asset-size: clamp(2.8rem, 6vw, 4.25rem);
+  --site-loader-star-image: url('${loaderStarDataUri}');
 }
 
 html[data-site-loading='pending'] body {
@@ -31,7 +32,7 @@ html[data-site-loading='pending'] body::after {
   left: 50%;
   width: var(--site-loader-star-size);
   aspect-ratio: 1;
-  background: url('${loaderStarDataUri}') center / contain no-repeat;
+  background: var(--site-loader-star-image) center / contain no-repeat;
   transform: translate(-50%, -50%);
   animation-name: siteHeroStarSpin, siteHeroStarGlow !important;
   animation-duration: 1.35s, 2.15s !important;
@@ -101,7 +102,7 @@ html[data-site-loading='pending'] body::after {
   left: 50%;
   width: var(--site-loader-asset-size);
   aspect-ratio: 1;
-  background: url('${loaderStarDataUri}') center / contain no-repeat;
+  background: var(--site-loader-star-image) center / contain no-repeat;
   transform: translate(-50%, -50%);
   animation-name: siteHeroStarSpin, siteHeroStarGlow !important;
   animation-duration: 1.45s, 2s !important;
@@ -164,7 +165,8 @@ export const SITE_LOADER_SCRIPT = `
   const shellClass = 'site-load-shell';
   const loadingClass = 'is-site-loading';
   const pageLoaderDelayMs = 120;
-  const pageLoaderMaxMs = 1500;
+  const isHomepage = window.location.pathname === '/';
+  const pageLoaderMaxMs = isHomepage ? 2800 : 1500;
   let pageReady = false;
   let pageLoaderTimer = 0;
   let pageLoaderMaxTimer = 0;
@@ -278,12 +280,21 @@ export const SITE_LOADER_SCRIPT = `
     markPageReady();
   };
 
+  const revealWhenHomepageTitleFontIsReady = () => {
+    if (!isHomepage || !document.fonts?.load) {
+      revealPage();
+      return;
+    }
+
+    document.fonts.load('400 1em "Press Start 2P"').then(revealPage, revealPage);
+  };
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', revealPage, { once: true });
+    document.addEventListener('DOMContentLoaded', revealWhenHomepageTitleFontIsReady, { once: true });
   } else {
-    revealPage();
+    revealWhenHomepageTitleFontIsReady();
   }
 
-  window.addEventListener('pageshow', revealPage);
+  window.addEventListener('pageshow', revealWhenHomepageTitleFontIsReady);
 })();
 `;
